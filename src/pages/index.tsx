@@ -1,0 +1,5 @@
+export { default as DashBoard } from './Dashboard/Dashboard'
+export { default as Login } from './Auth/Login'
+export { default as Register } from './Auth/Register'
+export { default as Profile } from './Profile/Profile'
+export { default as Staff } from './Staff/Staff'
