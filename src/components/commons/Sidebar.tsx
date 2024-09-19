@@ -17,6 +17,16 @@ const navItems = [
         name: "Profile",
         link: path.profile,
     },
+    {
+        id: 3,
+        name: "Staff",
+        link: path.staff,
+    },
+    {
+        id: 4,
+        name: "Customer",
+        link: path.customer,
+    }
 ];
 
 export default function SideBar() {

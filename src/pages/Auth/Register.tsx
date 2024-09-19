@@ -17,29 +17,24 @@ import { useNavigate } from "react-router-dom";
 
 export default function Register() {
     const navigate = useNavigate();
-    const [gender, setGender] = React.useState("male");
-    const [selectedDate, setSelectedDate] = React.useState(
-        new Date("2010-12-31").toISOString().slice(0, 10)
-    );
+    const [role, setRole] = React.useState("cashier");
 
     const handleChange = (event: any) => {
-        setGender(event.target.value);
-    };
-    const handleChangeDate = (event: any) => {
-        setSelectedDate(event.target.value);
+        setRole(event.target.value);
     };
 
     const RegisterSchema = useFormik({
         initialValues: {
             name: "",
+            username: "",
             email: "",
             password: "",
-            address: "",
             phone: "",
             confirmPassword: "",
         },
         validationSchema: Yup.object({
             name: Yup.string().required("Name is required"),
+            username: Yup.string().required("Username is required"),
             email: Yup.string()
                 .email("Invalid email")
                 .required("Email is required"),
@@ -53,7 +48,7 @@ export default function Register() {
             confirmPassword: Yup.string().required(
                 "Confirm Password is required"
             ),
-            address: Yup.string().required("Address is required"),
+
             phone: Yup.string()
                 .matches(
                     /^[0-9]{10}$/,
@@ -63,21 +58,17 @@ export default function Register() {
         }),
         onSubmit: async (values: {
             name: string;
+            username: string;
             email: string;
             password: string;
-            address: string;
             phone: string;
             confirmPassword: string;
         }) => {
             const data = {
                 ...values,
-                phoneNumber: values.phone,
-                gender,
-                birth: selectedDate,
+                phone: values.phone,
+                role,
             };
-
-            console.log(values.password);
-            console.log(values.password !== values.confirmPassword);
             if ((values.password !== values.confirmPassword) == true) {
                 Swal.fire({
                     icon: "error",
@@ -89,7 +80,7 @@ export default function Register() {
                 });
             } else {
                 const rs: AxiosResponse<any> = await registerAPI(data);
-                console.log(rs);
+
                 if (rs.status === 200) {
                     Swal.fire({
                         icon: "success",
@@ -141,52 +132,39 @@ export default function Register() {
                         {...RegisterSchema.getFieldProps("name")}
                     />
 
-                    <span>Address</span>
-                    <input
-                        type="text"
-                        placeholder="Address"
-                        className="p-2 border border-gray-300 rounded-md w-full h-[35px]"
-                        {...RegisterSchema.getFieldProps("address")}
-                    />
-
                     <FormControl>
-                        <FormLabel>Gender</FormLabel>
+                        <FormLabel>Role</FormLabel>
                         <RadioGroup
-                            defaultValue="male"
+                            defaultValue="cashier"
                             name="radio-buttons-group"
-                            value={gender}
+                            value={role}
                             onChange={handleChange}
                             orientation="horizontal"
                         >
                             <Radio
-                                value="male"
-                                label="Male"
+                                value="cashier"
+                                label="Cashier"
                                 variant="outlined"
                             />
-                            <Radio
-                                value="female"
-                                label="Female"
-                                variant="soft"
-                            />
+                            <Radio value="chef" label="Chef" variant="soft" />
+                            <Radio value="admin" label="Admin" variant="soft" />
                         </RadioGroup>
                     </FormControl>
 
-                    <span>BirthDay</span>
-                    <input
-                        type="date"
-                        min={new Date("1980-01-01").toISOString().slice(0, 10)}
-                        max={new Date("2010-12-31").toISOString().slice(0, 10)}
-                        className=" border rounded-md"
-                        value={selectedDate}
-                        onChange={(e) => handleChangeDate(e)}
-                        form="yyyy"
-                    />
                     <span>Phone Number</span>
                     <input
                         type="text"
                         placeholder="Phone"
                         className="p-2 border border-gray-300 rounded-md w-full h-[35px]"
                         {...RegisterSchema.getFieldProps("phone")}
+                    />
+
+                    <span>User Name</span>
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        className="p-2 border border-gray-300 rounded-md w-full h-[35px]"
+                        {...RegisterSchema.getFieldProps("username")}
                     />
                     <span>Email</span>
                     <input
@@ -217,6 +195,13 @@ export default function Register() {
                         </div>
                     ) : null}
 
+                    {RegisterSchema.touched.username &&
+                    RegisterSchema.errors.username ? (
+                        <div className="text-[12px] text-red-600">
+                            *{RegisterSchema.errors.username}
+                        </div>
+                    ) : null}
+
                     {RegisterSchema.touched.phone &&
                     RegisterSchema.errors.phone ? (
                         <div className="text-[12px] text-red-600">
@@ -241,13 +226,6 @@ export default function Register() {
                     RegisterSchema.errors.confirmPassword ? (
                         <div className="text-[12px] text-red-600">
                             *{RegisterSchema.errors.confirmPassword}
-                        </div>
-                    ) : null}
-
-                    {RegisterSchema.touched.address &&
-                    RegisterSchema.errors.address ? (
-                        <div className="text-[12px] text-red-600">
-                            *{RegisterSchema.errors.address}
                         </div>
                     ) : null}
 
