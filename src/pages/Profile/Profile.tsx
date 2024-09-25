@@ -3,24 +3,25 @@ import SideBar from "../../components/commons/Sidebar";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { format, parseISO, set } from "date-fns";
 import Swal from "sweetalert2";
-//MUI
-import {
-    FormControl,
-    FormLabel,
-    RadioGroup,
-    Radio,
-    FormControlLabel,
-} from "@mui/material";
 //apis
-import { getUserByIdAPI, changePassword, editUserAPI } from "./profileService";
+import {
+    getStaffByIdAPI,
+    changePassword,
+    editUserAPI,
+    uploadImageAPI,
+} from "./profileService";
+import LoadingScreen from "../../components/commons/LoadingScreen";
+import { logout } from "../../redux/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isLogin = useSelector((state: any) => state.userSlice.isLogin);
-    const _id = useSelector((state: any) => state.userSlice.id);
+    const id = useSelector((state: any) => state.userSlice.id);
 
+    const [isLoading, setIsLoading] = useState(false);
     const [isChangePassword, setIsChangePassword] = useState(false);
     const [isEditProfile, setIsEditProfile] = useState(false);
 
@@ -41,11 +42,31 @@ export default function Profile() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
-    const [gender, setGender] = useState("male");
-    const [selectedDate, setSelectedDate] = useState(
-        new Date("2010-12-31").toISOString().slice(0, 10)
-    );
+    const [image, setImage] = useState("");
+
+    //image////////////////////////
+    const [selectedImage, setSelectedImage] = useState(null);
+    const handleFileChange = (event: any) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith("image/") && file.size < 5000000) {
+            setSelectedImage(file);
+        } else {
+            alert("File không hợp lệ. Chỉ chấp nhận ảnh nhỏ hơn 5MB.");
+        }
+    };
+
+    const triggerFileInput = () => {
+        document.getElementById("imageFile")?.click();
+    };
+
+    useEffect(() => {
+        return () => {
+            if (selectedImage) {
+                URL.revokeObjectURL(selectedImage);
+            }
+        };
+    }, [selectedImage]);
+    //////////////////////////////////////////////
 
     const resetForm = () => {
         setConfirmPassword("");
@@ -55,12 +76,6 @@ export default function Profile() {
         setIsErrorNewPassword(false);
         setIsErrorOldPassword(false);
         setIsSamePassword(false);
-    };
-    const handleChange = (event: any) => {
-        setGender(event.target.value);
-    };
-    const handleChangeDate = (event: any) => {
-        setSelectedDate(event.target.value);
     };
     const handleUndo = () => {
         resetForm();
@@ -141,16 +156,24 @@ export default function Profile() {
             } else {
                 setIsInvalidPhoneNumber(false);
             }
+
+            setIsLoading(true);
+
+            const formData = new FormData();
+            formData.append("image", selectedImage || image);
+            const rsImage = await uploadImageAPI(formData);
+            console.log(rsImage);
+
             const data = {
-                _id: _id,
+                user_id: id,
+                image: rsImage?.data?.data?.path || image,
                 name: name,
-                address: address,
-                phoneNumber: phone,
-                gender: gender === "female" ? "true" : "false",
-                birth: selectedDate,
+                email: email,
+                phone: phone,
             };
             const rs = await editUserAPI(data);
-            console.log("tttt", rs);
+            setIsLoading(false);
+
             if (rs.data?.status === 200) {
                 Swal.fire({
                     icon: "success",
@@ -171,20 +194,14 @@ export default function Profile() {
     };
 
     const fetchUser = async () => {
-        const rs = await getUserByIdAPI(_id);
-
-        setName(rs?.data?.data[0]?.name);
+        const rs = await getStaffByIdAPI(id);
+        console.log(rs);
+     
+        setName(rs?.data?.data[0]?.fullName);
         setEmail(rs?.data?.data[0]?.email);
-        setPhone(rs?.data?.data[0]?.phoneNumber);
-        setAddress(rs?.data?.data[0]?.address);
-        setGender(rs?.data?.data[0]?.gender == "1" ? "female" : "male");
-        setSelectedDate(
-            rs?.data?.data[0]?.birth
-                ? format(parseISO(rs?.data?.data[0]?.birth), "yyyy-MM-dd")
-                : ""
-        );
+        setPhone(rs?.data?.data[0]?.phone);
+        setImage(rs?.data?.data[0]?.image);
     };
-
     useEffect(() => {
         if (!isLogin) {
             navigate("/login");
@@ -192,27 +209,64 @@ export default function Profile() {
         fetchUser();
         sessionStorage.setItem("active", "1");
     }, []);
+
     return (
         <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+            {isLoading && <LoadingScreen />}
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
             <div className="w-full h-full bg-slate-300 col-span-5 row-span-11 p-2 flex justify-center items-center">
-                <div className="w-1/2 h-auto bg-white rounded-md">
+                <div className="w-1/3 h-auto bg-white rounded-md">
                     <div className="w-full h-[10%] flex justify-center items-center">
-                        <span className="text-[30px] font-bold">Profile</span>
+                        <span className="text-[30px] font-bold px-5 pt-5">
+                            Your Account
+                        </span>
                     </div>
                     <div className="w-full h-[90%] flex justify-center items-center p-5">
                         <div className="w-full h-full flex flex-col justify-start items-start gap-1 ">
-                            <div className="w-full h-[40px] flex justify-start items-center gap-3">
+                            <div className="w-full h-[150px] flex flex-col justify-center items-center gap-3">
+                                {selectedImage && (
+                                    <img
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Avatar Preview"
+                                        className="rounded-full w-[150px] h-[150px]"
+                                    />
+                                )}
+                                {selectedImage === null && (
+                                    <img
+                                        src={image}
+                                        alt="Avatar"
+                                        className="rounded-full w-[150px] h-[150px]"
+                                    />
+                                )}
+                                {isEditProfile && (
+                                    <button
+                                        onClick={triggerFileInput}
+                                        className="text-[12px] text-blue-300 self-center cursor-pointer"
+                                        disabled={!isEditProfile}
+                                    >
+                                        Change your avatar
+                                    </button>
+                                )}
+                            </div>
+                            <input
+                                id="imageFile"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                style={{ display: "none" }}
+                            />
+
+                            <div className="w-full h-[40px] flex justify-start items-center gap-3 mt-2">
                                 <span className="text-[15px] font-bold">
                                     Name:
                                 </span>
                                 <input
                                     type="text"
                                     value={name}
-                                    className="border rounded-md"
+                                    className="border rounded-md w-full "
                                     onChange={(e) => setName(e.target.value)}
                                     disabled={!isEditProfile}
                                 />
@@ -224,7 +278,7 @@ export default function Profile() {
                                 <input
                                     type="text"
                                     value={email}
-                                    className="border rounded-md"
+                                    className="border rounded-md w-full "
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled
                                 />
@@ -236,7 +290,7 @@ export default function Profile() {
                                 <input
                                     type="text"
                                     value={phone}
-                                    className="border rounded-md"
+                                    className="border rounded-md w-full"
                                     onChange={(e) => setPhone(e.target.value)}
                                     disabled={!isEditProfile}
                                 />
@@ -251,59 +305,6 @@ export default function Profile() {
                                     *Phone number must be exactly 10 digits
                                 </span>
                             )}
-                            <div className="w-full h-[40px] flex justify-start items-center gap-3">
-                                <span className="text-[15px] font-bold">
-                                    Address:
-                                </span>
-                                <input
-                                    type="text"
-                                    value={address}
-                                    className="border rounded-md w-full"
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    disabled={!isEditProfile}
-                                />
-                            </div>
-                            <FormControl disabled={!isEditProfile}>
-                                <FormLabel>Gender</FormLabel>
-                                <RadioGroup
-                                    defaultValue="male"
-                                    name="radio-buttons-group"
-                                    value={gender}
-                                    onChange={handleChange}
-                                    row
-                                >
-                                    <FormControlLabel
-                                        value="male"
-                                        control={<Radio />}
-                                        label="Male"
-                                    />
-                                    <FormControlLabel
-                                        value="female"
-                                        control={<Radio />}
-                                        label="Female"
-                                    />
-                                </RadioGroup>
-                            </FormControl>
-
-                            <div className="w-full h-[40px] flex  flex-row justify-start items-center gap-3">
-                                <span className="text-[15px] font-bold">
-                                    BirthDay
-                                </span>
-                                <input
-                                    type="date"
-                                    min={new Date("1980-01-01")
-                                        .toISOString()
-                                        .slice(0, 10)}
-                                    max={new Date("2010-12-31")
-                                        .toISOString()
-                                        .slice(0, 10)}
-                                    className=" border rounded-md"
-                                    value={selectedDate}
-                                    onChange={(e) => handleChangeDate(e)}
-                                    form="yyyy"
-                                    disabled={!isEditProfile}
-                                />
-                            </div>
 
                             {isChangePassword && (
                                 <div className="w-full h-[40px] flex flex-row justify-start items-center gap-2">

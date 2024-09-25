@@ -5,5 +5,6 @@ const path = {
     profile: "/profile",
     staff: "/staff",
     customer: "/customer",
+    menu: "/menu",
 };
 export default path;

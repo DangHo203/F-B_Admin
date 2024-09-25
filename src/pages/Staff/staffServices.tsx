@@ -1,11 +1,18 @@
 import axios from "../../axios";
-import { deleteUserAPI } from '../Profile/profileService';
 
 export const getSumStaffAPI = async (data: any) => {
     return await axios({
         method: "GET",
         url: `/staff/getSumStaff`,
         params: data,
+    });
+};
+
+export const getStaffByIdAPI = async (id: any) => {
+    return await axios({
+        method: "GET",
+        url: `/staff/getStaffById`,
+        params: { _id: id },
     });
 };
 
@@ -38,4 +45,4 @@ export const updateStaffAPI = async (data: any) => {
         url: "/staff/updateStaff",
         params: data,
     });
-}
+};

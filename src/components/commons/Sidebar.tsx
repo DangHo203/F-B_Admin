@@ -14,19 +14,24 @@ const navItems = [
 
     {
         id: 2,
-        name: "Profile",
-        link: path.profile,
-    },
-    {
-        id: 3,
         name: "Staff",
         link: path.staff,
     },
     {
-        id: 4,
+        id: 3,
         name: "Customer",
         link: path.customer,
-    }
+    },
+    {
+        id: 4,
+        name: "Menu",
+        link: path.menu,
+    },
+    {
+        id: 5,
+        name: "Profile",
+        link: path.profile,
+    },
 ];
 
 export default function SideBar() {

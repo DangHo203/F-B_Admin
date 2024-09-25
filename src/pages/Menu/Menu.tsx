@@ -4,9 +4,11 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function DashBoard() {
+
+export default function Menu() {
     const navigate = useNavigate();
     const isLogin = useSelector((state: any) => state.userSlice.isLogin);
+
     useEffect(() => {
         if (!isLogin) {
             navigate("/login");
@@ -19,7 +21,9 @@ export default function DashBoard() {
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-11"></div>
+            <div className="w-full h-full bg-slate-300 col-span-5 row-span-12">
+                
+            </div>
         </div>
     );
 }

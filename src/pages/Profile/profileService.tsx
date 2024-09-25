@@ -6,65 +6,28 @@ export const changePassword = async (data: any) => {
         url: `/user/changePassword`,
         params: data,
     });
-}
-
-export const getAllUserAPI = async () => {
-    return await axios({
-        method: "GET",
-        url: "/user/getUser",
-    });
 };
 
-export const getUserByIdAPI = async (id: string) => {
+export const getStaffByIdAPI = async (id: any) => {
     return await axios({
         method: "GET",
-        url: "/user/getUserById",
-        params: { _id: id },
-    });
-}
-
-export const deleteUserAPI = async (id: string) => {
-    return await axios({
-        method: "DELETE",
-        url: `/user/deleteUser`,
+        url: `/staff/getStaffById`,
         params: { _id: id },
     });
 };
+
 export const editUserAPI = async (data: any) => {
     return await axios({
         method: "PUT",
-        url: `/user/updateUser`,
-        params: data,
-    });
-};
-export const checkPhoneNumberAPI = async (phoneNumber: String) => {
-    return await axios({
-        method: "POST",
-        url: `/user/checkPhoneNumber`,
-        params: {
-            phoneNumber: phoneNumber,
-        },
-    });
-};
-export const getSumUserAPI = async (data: any) => {
-    return await axios({
-        method: "GET",
-        url: `/user/getSumUser`,
+        url: `/staff/updateProfile`,
         params: data,
     });
 };
 
-export const getCustomerByParamsAPI = async (data: any) => {
-    return await axios({
-        method: "GET",
-        url: `/user/getUsersByParams`,
-        params: data,
-    });
-};
-export const updateStatusAPI = async (data: any) => {
+export const uploadImageAPI = async (data: any) => {
     return await axios({
         method: "POST",
-        url: `/user/status`,
-        params: data,
+        url: `/staff/uploadImage`,
+        data: data,
     });
-};
+}

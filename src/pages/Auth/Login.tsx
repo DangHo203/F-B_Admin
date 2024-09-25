@@ -19,15 +19,17 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
     const handleSubmit = async () => {
-        const rs: AxiosResponse<any> = await loginAPI(username.trim(), password.trim());
-        console.log("hi",rs);
+        const rs: AxiosResponse<any> = await loginAPI(
+            username.trim(),
+            password.trim()
+        );
         const { status } = rs;
-        console.log(status);
+
         if (rs?.status === 200) {
             dispatch(
                 login({
                     token: rs?.data?.data.token,
-                    id: rs?.data?.data.user._id,
+                    id: rs?.data?.data.user.user_id,
                 })
             );
 
@@ -55,7 +57,7 @@ export default function Login() {
                 title: "Login failed",
                 text: "You are not allowed to login",
             });
-        } 
+        }
     };
 
     useEffect(() => {

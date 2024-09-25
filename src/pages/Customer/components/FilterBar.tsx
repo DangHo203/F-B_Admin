@@ -10,49 +10,23 @@ const statusItems = [
         label: "Active",
     },
     {
-        value: "pending",
-        label: "Pending",
-    },
-    {
-        value: "off",
-        label: "Off",
-    },
-    {
         value: "banned",
         label: "Banned",
     },
 ];
 
-const roleItems = [
-    {
-        value: "admin",
-        label: "Admin",
-    },
-    {
-        value: "cashier",
-        label: "Cashier",
-    },
-    {
-        value: "chef",
-        label: "Chef",
-    },
-]
-
 export default function FilterBar() {
     const navigate = useNavigate();
 
     const [status, setStatus] = useState("");
-    const [role, setRole] = useState("");
     const [search, setSearch] = useState("");
 
     const [params] = useSearchParams();
 
     const handleReset = () => {
         setStatus("");
-        setRole("");
         setSearch("");
         params.delete("status");
-        params.delete("role");
         params.delete("search");
         navigate(`?${params.toString()}`);
     };
@@ -65,17 +39,6 @@ export default function FilterBar() {
         }
         params.delete("status");
         params.append("status", event.target.value as string);
-        navigate(`?${params.toString()}`);
-    };
-    const handleChangeRole = (event: any) => {
-        setRole(event.target.value as string);
-        if (event.target.value === "") {
-            params.delete("role");
-            navigate(`?${params.toString()}`);
-            return;
-        }
-        params.delete("role");
-        params.append("role", event.target.value as string);
         navigate(`?${params.toString()}`);
     };
     const handleChangeSearch = (event: any) => {
@@ -91,7 +54,7 @@ export default function FilterBar() {
     };
 
     return (
-        <div className="w-full h-[10%] bg-gray-400 p-2 flex justify-center items-center">
+        <div className="w-full h-[10%] bg-transparent p-2 flex justify-center items-center">
             <div className=" w-full h-full flex justify-start items-center bg-white rounded-[30px] gap-5 px-5">
                 <label htmlFor="search">Search</label>
                 <input
@@ -116,28 +79,7 @@ export default function FilterBar() {
                             className="w-auto h-[40px] p-2 border border-gray-300 rounded-md bg-white flex items-center"
                         >
                             <MenuItem value={"active"}>Active</MenuItem>
-                            <MenuItem value={"pending"}>Pending</MenuItem>
-                            <MenuItem value={"off"}>Off</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
-
-                <Box sx={{ minWidth: 120, height: 40 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-standard-label">
-                            Role
-                        </InputLabel>
-                        <Select
-                            labelId="demo-simple-select-standard-label"
-                            id="demo-simple-select-standard"
-                            value={role}
-                            label="Role"
-                            onChange={handleChangeRole}
-                            className="w-auto h-[40px] p-2 border border-gray-300 rounded-md bg-white flex items-center"
-                        >
-                            <MenuItem value={"admin"}>Admin</MenuItem>
-                            <MenuItem value={"chef"}>Chef</MenuItem>
-                            <MenuItem value={"cashier"}>Cashier</MenuItem>
+                            <MenuItem value={"banned"}>Banned</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>

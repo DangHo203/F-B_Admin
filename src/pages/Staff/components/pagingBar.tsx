@@ -19,7 +19,11 @@ export default function PagingBar() {
             limit: 5,
         };
         const res = await getSumStaffAPI(data);
-        setTotalPage(Math.ceil(res.data.length[0].Sum / limit));
+
+        if (res?.status !== 200) {
+            return;
+        }
+        setTotalPage(Math.ceil(res?.data?.length[0]?.Sum / limit));
     };
     useEffect(() => {
         getSumStaff();   
