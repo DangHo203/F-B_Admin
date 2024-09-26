@@ -16,22 +16,27 @@ const title = [
     {
         title: "ID",
         colSpan: "col-span-1",
+        justify: "justify-center",
     },
     {
         title: "Name",
         colSpan: "col-span-2",
+        justify: "justify-start",
     },
     {
         title: "Phone",
         colSpan: "col-span-2",
+        justify: "justify-start",
     },
     {
         title: "Status",
         colSpan: "col-span-1",
+        justify: "justify-start",
     },
     {
         title: "Action",
         colSpan: "col-span-1",
+        justify: "justify-start",
     },
 ];
 
@@ -109,12 +114,12 @@ export default function ListStaff() {
 
     return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-[100px]">
-            <div className="grid grid-cols-7 grid-rows-1 w-full px-5">
+            <div className="grid grid-cols-7 grid-rows-1 w-full px-[30px]">
                 {title.map((item, index) => {
                     return (
                         <div
                             key={index}
-                            className={`flex justify-start items-center ${item.colSpan}`}
+                            className={`flex ${item.justify} items-center ${item.colSpan}`}
                         >
                             <p className="text-lg font-semibold">
                                 {item.title}
@@ -146,7 +151,7 @@ export default function ListStaff() {
                                         key={item.user_id}
                                         className=" grid grid-cols-7 grid-rows-1 w-full"
                                     >
-                                        <div className="flex justify-start items-center col-span-1">
+                                        <div className="flex justify-center items-center col-span-1">
                                             <p className="text-lg font-semibold">
                                                 {item.user_id}
                                             </p>
