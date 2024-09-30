@@ -2,6 +2,7 @@ import React, { lazy, useEffect, startTransition, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 const DashBoard = lazy(() => import("./pages/Dashboard/Dashboard"));
 const Login = lazy(() => import("./pages/Auth/Login"));
@@ -10,6 +11,7 @@ const Profile = lazy(() => import("./pages/Profile/Profile"));
 const Staff = lazy(() => import("./pages/Staff/Staff"));
 const Customer = lazy(() => import("./pages/Customer/Customer"));
 const Menu = lazy(() => import("./pages/Menu/Menu"));
+const Ingredient = lazy(() => import("./pages/Ingredient/Ingredients"));
 
 function App() {
     const isLogin = useSelector((state: any) => state.userSlice.isLogin);
@@ -36,10 +38,12 @@ function App() {
                             <Route path="/staff" element={<Staff />} />
                             <Route path="/customer" element={<Customer />} />
                             <Route path="/menu" element={<Menu />} />
+                            <Route path="/ingredient" element={<Ingredient />} />
                         </>
                     )}
                 </Routes>
             </Suspense>
+            <ToastContainer />
         </div>
     );
 }

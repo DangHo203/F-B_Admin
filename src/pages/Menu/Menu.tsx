@@ -10,9 +10,8 @@ import {getSumFoodAPI} from "./menuServices";
 import PagingBar from "../../components/commons/PagingBar";
 import FormAdd from "./Components/FormAdd";
 import FormEdit from "./Components/FormEdit";
-import { set } from "date-fns";
 
-export default function Menu() {
+const Menu = () => {
     const navigate = useNavigate();
     const isLogin = useSelector((state: any) => state.userSlice.isLogin);
     const [params] = useSearchParams();
@@ -64,3 +63,5 @@ export default function Menu() {
         </div>
     );
 }
+
+export default Menu;

@@ -29,6 +29,11 @@ const navItems = [
     },
     {
         id: 5,
+        name: "Ingredient",
+        link: path.ingredient,
+    },
+    {
+        id: 6,
         name: "Profile",
         link: path.profile,
     },

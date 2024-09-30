@@ -6,5 +6,6 @@ const path = {
     staff: "/staff",
     customer: "/customer",
     menu: "/menu",
+    ingredient: "/ingredient",
 };
 export default path;
