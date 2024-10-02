@@ -14,12 +14,19 @@ import FormEdit from "./Components/FormEdit";
 const Menu = () => {
     const navigate = useNavigate();
     const isLogin = useSelector((state: any) => state.userSlice.isLogin);
+    const [isRender, setIsRender] = useState(false);
     const [params] = useSearchParams();
     const [page, setPage] = useState(1);
     const limit = 5;
 
     const [isAdd, setIsAdd] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
+    const [m_id, setM_id] = useState("");
+    const handleEdit= (isEdit: boolean, m_id: string) => {
+        setIsEdit(isEdit);
+        setM_id(m_id);       
+    }
+    console.log(m_id);
 
     //api paging
     const getSumFood = async () => {
@@ -28,13 +35,13 @@ const Menu = () => {
             title: params.get("title"),
         };
         const res = await getSumFoodAPI(data);
-        console.log(res);
         setPage(Math.ceil(res.data.data[0].Sum / limit));
     };
 
-    useEffect(() => {
+    useEffect(() => {  
         getSumFood();
-    }, [params]);
+        setIsRender(!isRender);
+    }, [params, isAdd, isEdit]);
 
     useEffect(() => {
         if (!isLogin) {
@@ -54,10 +61,10 @@ const Menu = () => {
                     isAdd && <FormAdd setIsAdd={setIsAdd}/>
                 }
                 {
-                    isEdit && <FormEdit setIsEdit={setIsEdit}/>
+                    isEdit && <FormEdit m_id={m_id} setIsEdit={setIsEdit}/>
                 }
                 <FilterBar setIsAdd={setIsAdd} />
-                <ListItems setIsEdit={setIsAdd} />
+                <ListItems setIsEdit={handleEdit} isRender={isRender}/>
                 <PagingBar totalPage={page} />
             </div>
         </div>

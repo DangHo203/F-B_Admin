@@ -3,12 +3,8 @@ import Input from "../../../components/commons/Input";
 
 interface FormNutritionProps {
     setIsOpenFormNutri: (value: boolean) => void;
-    handleSaveNutritionData?: (data: {
-        calories: string;
-        protein: string;
-        fat: string;
-        carbohydrate: string;
-    }) => void;
+    handleSaveNutritionData?: (data: any) => void;
+    data?: any;
     id?: string;
     caloriesProps?: string;
     proteinProps?: string;
@@ -24,6 +20,7 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
     proteinProps,
     fatProps,
     carbohydrateProps,
+    data,
 }) => {
     const [calories, setCalories] = useState(caloriesProps || "");
     const [protein, setProtein] = useState(proteinProps || "");
@@ -33,16 +30,23 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
     const handleSave = () => {
         if (handleSaveNutritionData) {
             handleSaveNutritionData({
+                nutritional_info_id:data.nutritional_info_id,
                 calories,
-                protein,
-                fat,
-                carbohydrate,
+                proteins:protein,
+                fats:fat,
+                carbs:carbohydrate,
             });
         }
         setIsOpenFormNutri(false);
     };
 
     useEffect(() => {
+        if (data) {
+            setCalories(data.calories);
+            setProtein(data.proteins);
+            setFat(data.fats);
+            setCarbohydrate(data.carbs);
+        }
         if (id) {
             //get data
         }

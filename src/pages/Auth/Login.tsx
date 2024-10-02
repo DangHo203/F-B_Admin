@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { loginAPI } from "./authServices";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import path from "../../ultils/path";
+import path from "../../utils/path";
 
 //redux
 import { useDispatch } from "react-redux";

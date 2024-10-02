@@ -1,34 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoAddOutline } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
+import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
 
-interface Ingredients {
-    title: string;
-    quantityRequired: number;
-}
+//api
+import { getIngredientAPI } from "../../Ingredient/ingredientServices";
+import { set } from "date-fns";
+
+import { IIngredients } from "../../../types/Menu";
+
 interface FormIngretionProps {
     setIsOpenFormIngre: (value: boolean) => void;
     handleSaveIngretionData?: (data: any) => void;
-    list?: Ingredients[];
+    list?: IIngredients[];
+    item_id?: string;
 }
 
 const FormIngredients: React.FC<FormIngretionProps> = ({
     setIsOpenFormIngre,
     handleSaveIngretionData,
     list,
+    item_id,
 }) => {
-    const [listIngredients, setListIngredients] = useState<Ingredients[]>(
+    const [listIngredients, setListIngredients] = useState<IIngredients[]>(
         list || []
     );
 
+    const [isAdd, setIsAdd] = useState(false);
+    const [titleAdd, setTitleAdd] = useState("");
+    const [idAdd, setIdAdd] = useState("");
+    const [quantityAdd, setQuantityAdd] = useState(0);
+
     const handleAddItem = () => {
-        setListIngredients([
-            ...listIngredients,
-            {
-                title: "",
-                quantityRequired: 0,
-            },
-        ]);
+        setIsAdd(!isAdd);
+        setTitleAdd("");
+        setQuantityAdd(1);
+        // if (listIngredients[0]?.title === "") {
+        //     return;
+        // }
+        // setListIngredients([
+        //     {
+        //         title: "",
+        //         quantityRequired: 1,
+        //     },
+        //     ...listIngredients,
+        // ]);
     };
     const handleDeleteItem = (index: number) => {
         const newList = [...listIngredients];
@@ -37,11 +54,58 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
     };
 
     const handleSave = () => {
+        if (isAdd) {
+            //validate
+            if (titleAdd === "" || quantityAdd === 0) {
+                setIsAdd(!isAdd);
+                return;
+            }
+            let itemExisted = false;
+            listIngredients.forEach((item) => {
+                if (item.name === titleAdd) {
+                    itemExisted = true;
+                }
+            });
+            if (itemExisted) {
+                toast.error("This item is already existed");
+                return;
+            }
+            //
+
+            setListIngredients([
+                ...listIngredients,
+                {
+                    name: titleAdd,
+                    item_id: Number(item_id),
+                    quantity_required: quantityAdd,
+                    ingredient_id: Number(idAdd),
+                },
+            ]);
+            setTitleAdd("");
+            setQuantityAdd(1);
+            setIsAdd(!isAdd);
+            return;
+        }
+
         if (handleSaveIngretionData) {
             handleSaveIngretionData(listIngredients);
         }
         setIsOpenFormIngre(false);
     };
+
+    //list Ingredients data
+    const fetchData = async () => {
+        const rs = await getIngredientAPI();
+        return rs?.data?.result;
+    };
+    const { data, error, isLoading } = useQuery({
+        queryKey: ["ingredients"],
+        queryFn: fetchData,
+    });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
     return (
         <div className="fixed inset-0 z-50 bg-opacity-50 bg-white w-screen h-screen p-[100px] flex justify-center items-center">
             <div className=" relative bg-white w-1/2 h-full flex gap-3 flex-col shadow-2xl rounded-md p-5">
@@ -66,46 +130,123 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                     </div>
                 </div>
                 <div className="h-[80%] w-full overflow-y-auto px-[50px] gap-2">
-                    {listIngredients.map((item, index) => (
-                        <div
-                            key={index}
-                            className="grid grid-cols-3 grid-rows-1"
-                        >
-                            <input
-                                type="text"
-                                value={item.title}
+                    {isAdd && (
+                        <div className="grid grid-cols-2 grid-rows-1 sticky top-0 gap-2">
+                            <select
                                 onChange={(e) => {
-                                    const newList = [...listIngredients];
-                                    newList[index].title = e.target.value;
-                                    setListIngredients(newList);
+                                    setTitleAdd(
+                                        e.target.selectedOptions[0].text
+                                    );
+                                    console.log(
+                                        e.target.selectedOptions[0].text
+                                    );
+                                    setIdAdd(e.target.value);
                                 }}
-                            />
+                                value={idAdd}
+                                className="border border-blue-300 p-2 rounded-xl"
+                            >
+                                {data?.map(
+                                    (
+                                        item: {
+                                            name: string;
+                                            ingredient_id: string;
+                                        },
+                                        index: number
+                                    ) => (
+                                        <option
+                                            key={index}
+                                            value={item.ingredient_id}
+                                        >
+                                            {item.name}
+                                        </option>
+                                    )
+                                )}
+                            </select>
                             <input
                                 type="number"
-                                value={item.quantityRequired}
+                                min={0}
+                                value={quantityAdd}
                                 onChange={(e) => {
-                                    const newList = [...listIngredients];
-                                    newList[index].quantityRequired = Number(
-                                        e.target.value
-                                    );
-                                    setListIngredients(newList);
+                                    setQuantityAdd(Number(e.target.value));
                                 }}
+                                className="border border-blue-300 p-2 rounded-xl"
+                                placeholder="Quantity"
                             />
-                            <div className="w-full flex justify-center items-center">
-                                <MdDeleteForever
-                                    onClick={() => handleDeleteItem(index)}
-                                    className="text-red-500 text-[30px] self-center hover:text-red-200"
-                                />
-                            </div>
                         </div>
-                    ))}
+                    )}
+                    {listIngredients?.map((item, index) => {
+                        console.log("hiii",item);
+                        return (
+                            <>
+                                <div
+                                    key={index}
+                                    className="grid grid-cols-3 grid-rows-1 gap-2 my-2"
+                                >
+                                    <select
+                                        value={item.name}
+                                        onChange={(e) => {
+                                            const newList = [
+                                                ...listIngredients,
+                                            ];
+                                            newList[index].name =
+                                                e.target.value;
+                                            setListIngredients(newList);
+                                        }}
+                                        className="border p-2 rounded-xl"
+                                    >
+                                        {data?.map(
+                                            (
+                                                item: {
+                                                    name: string;
+                                                },
+                                                index: number
+                                            ) => (
+                                                <option
+                                                    key={index}
+                                                    value={item.name}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            )
+                                        )}
+                                    </select>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={item.quantity_required}
+                                        onChange={(e) => {
+                                            const newList = [
+                                                ...listIngredients,
+                                            ];
+                                            newList[index].quantity_required =
+                                                Number(e.target.value);
+                                            setListIngredients(newList);
+                                        }}
+                                        className="p-2 rounded-xl border"
+                                    />
+                                    <div className="w-full flex justify-center items-center">
+                                        <MdDeleteForever
+                                            onClick={() =>
+                                                handleDeleteItem(index)
+                                            }
+                                            className="text-red-500 text-[30px] self-center hover:text-red-200"
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })}
                 </div>
 
                 <button
                     onClick={handleSave}
-                    className="bg-blue-500 text-white p-2 rounded-md h-[10%] "
+                    className={
+                        isAdd
+                            ? "bg-red-500 text-white p-2 rounded-md h-[10%] "
+                            : "bg-blue-500 text-white p-2 rounded-md h-[10%] "
+                    }
                 >
-                    Save
+                    {isAdd ? "Confirm" : "Save"}
                 </button>
             </div>
         </div>

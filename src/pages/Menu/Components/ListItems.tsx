@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getFoodByParamsAPI } from "../menuServices";
+import { getFoodByParamsAPI, deleteFoodAPI } from "../menuServices";
+import Swal from "sweetalert2";
 
 const title = [
     {
@@ -41,14 +42,40 @@ const title = [
 ];
 
 interface ListItemsProps {
-    setIsEdit: (value: boolean) => void;
+    setIsEdit: (value: boolean, m_id: string) => void;
+    isRender?: boolean;
 }
-const ListItems: React.FC<ListItemsProps> = ({
-    setIsEdit,
-}) => {
+const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
     const [list, setList] = useState<any[]>([]);
     const navigate = useNavigate();
     const [params] = useSearchParams();
+
+    const handleDelete = (id: string) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, keep it",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const rs = await deleteFoodAPI(id);
+                if (rs.status === 200) {
+                    Swal.fire(
+                        "Deleted!",
+                        "Your file has been deleted.",
+                        "success"
+                    );
+                } else {
+                    Swal.fire("Error!", "Something went wrong", "error");
+                }
+                fetchData();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire("Cancelled", "Your file is safe :)", "error");
+            }
+        });
+    };
 
     const fetchData = async () => {
         const data = {
@@ -64,7 +91,7 @@ const ListItems: React.FC<ListItemsProps> = ({
 
     useEffect(() => {
         fetchData();
-    }, [params]);
+    }, [params, isRender]);
 
     useEffect(() => {
         if (list?.length === 0) {
@@ -100,6 +127,7 @@ const ListItems: React.FC<ListItemsProps> = ({
                     {list?.map(
                         (
                             item: {
+                                item_id: string;
                                 title: string;
                                 image: string;
                                 price: string;
@@ -165,10 +193,25 @@ const ListItems: React.FC<ListItemsProps> = ({
                                                 <button className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400">
                                                     Nurti
                                                 </button>
-                                                <button onClick={()=>setIsEdit(true)} className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400">
+                                                <button
+                                                    onClick={() =>
+                                                        setIsEdit(
+                                                            true,
+                                                            item.item_id
+                                                        )
+                                                    }
+                                                    className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400"
+                                                >
                                                     Edit
                                                 </button>
-                                                <button className="text-white bg-red-500 p-2 rounded-md hover:bg-red-400">
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            item.item_id
+                                                        )
+                                                    }
+                                                    className="text-white bg-red-500 p-2 rounded-md hover:bg-red-400"
+                                                >
                                                     Delete
                                                 </button>
                                             </div>

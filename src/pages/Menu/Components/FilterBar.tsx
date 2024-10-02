@@ -24,7 +24,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
         setSearch("");
         setCategory("");
         params.delete("status");
-        params.delete("search");
+        params.delete("title");
         params.delete("category");
         navigate(`?${params.toString()}`);
     };

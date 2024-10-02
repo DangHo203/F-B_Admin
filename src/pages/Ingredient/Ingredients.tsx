@@ -15,7 +15,7 @@ import FilterBar from "./components/FilterBar";
 
 export default function Staff() {
     const [isAdd, setIsAdd] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
+
     const [isRender, setIsRender] = useState(false);
 
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function Staff() {
     useEffect(() => {
         fetchData();
 
-    }, [params, isAdd, isEdit, isRender]);
+    }, [params, isRender]);
 
     useEffect(() => {
         if (!isLogin) {
@@ -54,9 +54,9 @@ export default function Staff() {
             {/* content */}
             <div className="w-full h-full bg-slate-300 col-span-5 row-span-12   ">
                 {isAdd && <FormAdd isOpen={setIsAdd} setIsRender={setIsRender} isRender={isRender}/>}
-                {isEdit && <FormEdit isOpen={setIsEdit} />}
+               
                 <FilterBar setIsAdd={setIsAdd} />
-                <ListIngredients setIsEdit={setIsEdit} isRender={isRender}/>
+                <ListIngredients isRender={isRender}/>
                 <PagingBar totalPage={totalPage} />
             </div>
         </div>

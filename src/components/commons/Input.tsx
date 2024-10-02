@@ -31,6 +31,7 @@ const Input: React.FC<InputProps> = ({
                 label={label}
                 variant="outlined"
                 value={value}
+                
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 type={type}
@@ -38,6 +39,7 @@ const Input: React.FC<InputProps> = ({
                 fullWidth
                 error= {error}
                 helperText={error ? errorMesage : ""}
+                inputProps={type === "number" ? { min: 0 } : {}}
             />
         </Box>
     );

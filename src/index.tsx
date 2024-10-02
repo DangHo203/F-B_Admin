@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { rootStore, persistor } from "./redux/persistConfig";
 import { PersistGate } from "redux-persist/integration/react";
@@ -11,13 +11,17 @@ import { BrowserRouter, Router } from "react-router-dom";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
-);
+);  
+
+const queyClient = new QueryClient();
 root.render(
-    <Provider store={rootStore}>
-        <PersistGate loading={null} persistor={persistor}>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        </PersistGate>
-    </Provider>
+    <QueryClientProvider client={queyClient}>
+        <Provider store={rootStore}>
+            <PersistGate loading={null} persistor={persistor}>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </PersistGate>
+        </Provider>
+    </QueryClientProvider>
 );

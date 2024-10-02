@@ -6,6 +6,8 @@ import {
 } from "../ingredientServices";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import FormEdit from "./FormEdit";
+import { set } from "date-fns";
 const title = [
     {
         title: "ID",
@@ -40,14 +42,13 @@ const title = [
 ];
 
 interface ListIngredientsProps {
-    setIsEdit: (value: boolean) => void;
     isRender: boolean;
 }
 const ListIngredients: React.FC<ListIngredientsProps> = ({
-    setIsEdit,
-
     isRender,
 }) => {
+    const [isEdit,setIsEdit] = useState(false);
+    const [id,setId] = useState("");
     const [list, setList] = useState<any[]>([]);
     const navigate = useNavigate();
     const [params] = useSearchParams();
@@ -73,6 +74,11 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
         });
     };
 
+    const handleEdit = async (id: string) => {
+        setId(id);
+        setIsEdit(true);
+    }
+
     const fetchData = async () => {
         const data = {
             is_available: params.get("status"),
@@ -81,14 +87,12 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
             limit: 10,
         };
         const rs = await getIngredientByParamsAPI(data);
-
-        console.log(rs);
         setList(rs?.data?.result);
     };
 
     useEffect(() => {
         fetchData();
-    }, [params, isRender]);
+    }, [params, isRender,isEdit]);
 
     useEffect(() => {
         if (list?.length === 0) {
@@ -96,9 +100,10 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
             params.append("page", "1");
             navigate(`?${params.toString()}`);
         }
-    }, [list]);
-    return (
+        }, [list]);
+        return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
+             {isEdit && <FormEdit isOpen={setIsEdit} i_id ={id} />}
             <div className="grid grid-cols-10 grid-rows-1 w-full px-5">
                 {title.map((item, index) => {
                     return (
@@ -179,7 +184,7 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
                                             <div className="flex flex-row justify-between items-center text-[12px] gap-2">
                                                 <button
                                                     onClick={() =>
-                                                        setIsEdit(true)
+                                                        handleEdit(item.ingredient_id)
                                                     }
                                                     className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400"
                                                 >

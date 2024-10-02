@@ -1,5 +1,5 @@
 import { link } from "fs";
-import path from "../../ultils/path";
+import path from "../../utils/path";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
