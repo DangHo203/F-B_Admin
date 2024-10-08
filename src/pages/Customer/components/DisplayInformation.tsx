@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCustomerByIdAPI } from "../customerServices";
+import { getCustomerByIdAPI } from "../customer.service";
 import { FaEye } from "react-icons/fa";
 const listOrders = [
     {
@@ -69,7 +69,6 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
         const res = await getCustomerByIdAPI(user_id);
         //api get list orders
         ///////////////////////
-        console.log(res?.data?.data[0]);
         setCustomerInfo(res?.data?.data[0]);
     };
     useEffect(() => {
@@ -77,8 +76,18 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
     }, []);
 
     return (
-        <div className="fixed inset-0 w-full h-full bg-gray-500 bg-opacity-60 p-[50px]  flex justify-center items-center z-40">
-            <div className="fixed top-5 right-5 flex justify-center items-center w-[50px] h-[50px]">
+        <div
+            onClick={() => {
+                setIsOpenFormInformation(false);
+            }}
+            className="fixed inset-0 w-full h-full bg-gray-500 bg-opacity-60 p-[50px]  flex justify-center items-center z-40"
+        >
+            <div
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
+                className="fixed z-50 top-5 right-5 flex justify-center items-center w-[50px] h-[50px]"
+            >
                 <button
                     onClick={() => setIsOpenFormInformation(false)}
                     className="text-[50px] w-[50px] h-[50px] text-red-500 hover:text-red-200 flex justify-center items-center"
@@ -86,7 +95,12 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
                     x
                 </button>
             </div>
-            <div className="opacity-100 flex flex-row justify-center items-center w-full h-full p-5 rounded-lg z-50 gap-5">
+            <div
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
+                className="opacity-100 flex flex-row justify-center items-center w-full h-full p-5 rounded-lg z-50 gap-5"
+            >
                 <div className="w-1/2 h-full text-[25px] bg-white rounded-2xl p-5 shadow-lg flex flex-col gap-[20px]">
                     <span className="text-[30px] self-center">
                         Customer Information
@@ -110,11 +124,11 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
                     </div>
                     <div className="flex flex-col justify-start items-start border p-5 rounded-xl">
                         <div className="mb-2  text-white bg-blue-500 rounded-[20px] p-2 w-full flex justify-center items-center">
-                            <span className="text-[20px]">Total Orders: </span> {" "}15
+                            <span className="text-[20px]">Total Orders: </span>{" "}
+                            15
                         </div>
                         <div className="mb-2  text-white bg-red-500 rounded-[20px] p-5 w-full flex justify-center items-center">
-                            <strong>Total Revenue : </strong>{" "}
-                            $10,000
+                            <strong>Total Revenue : </strong> $10,000
                         </div>
                     </div>
                 </div>
@@ -129,7 +143,7 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
                                 className="w-full h-[100px] flex justify-between items-center border-b border-gray-300 p-5"
                             >
                                 <div className="flex flex-col justify-center items-start">
-                                    <p className="text-lg font-semibold">
+                                    <p className="text-lg font-bold text-black opacity-50 py-2">
                                         {order.name}
                                     </p>
                                     <p className="text-sm text-gray-500">
@@ -137,7 +151,7 @@ const DisplayInformation: React.FC<DisplayInformationProps> = ({
                                     </p>
                                 </div>
                                 <div className="flex flex-col justify-center items-center">
-                                    <p className="text-lg font-semibold">
+                                    <p className="text-lg font-bold text-black opacity-50 py-2">
                                         ${order.total}
                                     </p>
                                     <p className="text-sm text-gray-500">

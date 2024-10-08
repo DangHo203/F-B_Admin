@@ -1,6 +1,6 @@
 import axios from "../../axios";
 
-export const getCustomerByIdAPI = async (id: any) => {
+export const getCustomerByIdAPI = async (id: number) => {
     return await axios({
         method: "GET",
         url: `/user/getCustomerById`,

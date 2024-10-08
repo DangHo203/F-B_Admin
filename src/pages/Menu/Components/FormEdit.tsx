@@ -4,28 +4,31 @@ import SelectInput from "../../../components/commons/Select";
 import { SelectChangeEvent } from "@mui/material/Select";
 import FormNutrition from "./FormNutrition";
 import FormIngredients from "./FormIngredients";
+
+import { FiImage } from "react-icons/fi";
+
 //api
 import {
     addNutritionAPI,
     getNutritionByIdAPI,
     updateNutritionAPI,
-} from "../nutritionService";
+} from "../nutrition.service";
 import {
     uploadImageAPI,
     addFoodAPI,
     getFoodByIdAPI,
     updateFoodAPI,
-} from "../menuServices";
+} from "../menu.service";
 import {
     addListItemIngredientAPI,
     deleteAllListItemIngredientAPI,
     getIngredientByIdAPI,
     updateListItemIngredientAPI,
-} from "../../Ingredient/ingredientServices";
+} from "../../Ingredient/ingredient.service";
 import LoadingScreen from "../../../components/commons/LoadingScreen";
 import { toast } from "react-toastify";
 
-import { IFoodDetail, IIngredients } from "../../../types/Menu";
+import { IFoodDetail, IIngredients } from "../../../types/menu.interface";
 
 interface IFormEditProps {
     setIsEdit: (value: boolean) => void;
@@ -44,9 +47,9 @@ const FormEdit: React.FC<IFormEditProps> = ({ setIsEdit, m_id }) => {
             getIngredientByIdAPI(m_id),
         ]);
         return {
-            food: food.data.data[0],
-            nutrition: nutrition.data.data[0],
-            ingredients: ingredient.data.result,
+            food: food?.data.data[0],
+            nutrition: nutrition?.data.data[0],
+            ingredients: ingredient?.data.result,
         };
     }
     useEffect(() => {
@@ -67,7 +70,7 @@ const FormEdit: React.FC<IFormEditProps> = ({ setIsEdit, m_id }) => {
     function validateData(): boolean {
         const newError = {
             title: foodDetail?.food.title === "" ? "Title is required" : "",
-            price: foodDetail?.food.price === "" ? "Price is required" : "",
+            price: foodDetail?.food.price === "" || Number(foodDetail?.food.price) <0 ? "Price is required" : "",
             category:
                 foodDetail?.food.category === "" ? "Category is required" : "",
             description:
@@ -108,16 +111,13 @@ const FormEdit: React.FC<IFormEditProps> = ({ setIsEdit, m_id }) => {
         }
 
         //add nutrition (optional)
-        console.log(foodDetail?.nutrition);
         if (foodDetail?.nutrition !== null) {
             await updateNutritionAPI({ ...foodDetail?.nutrition });
         }
 
         //add ingredients (optional)
-        console.log(foodDetail?.ingredients);
         if (foodDetail?.ingredients.length !== 0) {
             const rs = await deleteAllListItemIngredientAPI({ item_id: m_id });
-            console.log(rs);
             foodDetail?.ingredients?.forEach(async (item) => {
                 await addListItemIngredientAPI({
                     item_id: m_id,
@@ -220,8 +220,9 @@ const FormEdit: React.FC<IFormEditProps> = ({ setIsEdit, m_id }) => {
                     )}
                     <span
                         onClick={handleChangeImage}
-                        className="text-blue-500 text-[15px]"
+                        className="text-blue-500 text-[15px] flex flex-row items-center gap-2 cursor-pointer hover:text-blue-100"
                     >
+                        <FiImage className="text-[30px]" />
                         Change image
                     </span>
                     <input
@@ -325,7 +326,7 @@ const FormEdit: React.FC<IFormEditProps> = ({ setIsEdit, m_id }) => {
             </div>
             <div
                 onClick={() => setIsEdit(false)}
-                className="text-red-600 text-[50px] absolute top-5 right-10 hover:text-red-200"
+                className="text-red-600 text-[50px] absolute top-5 right-10 hover:text-red-200 cursor-pointer"
             >
                 X
             </div>

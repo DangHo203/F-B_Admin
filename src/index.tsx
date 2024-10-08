@@ -5,9 +5,9 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
-import { rootStore, persistor } from "./redux/persistConfig";
+import { rootStore, persistor } from "./redux/config/persist.config";
 import { PersistGate } from "redux-persist/integration/react";
-import { BrowserRouter, Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement

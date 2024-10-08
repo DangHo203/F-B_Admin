@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterBar from "./Components/FilterBar";
 import ListItems from "./Components/ListItems";
 
-import {getSumFoodAPI} from "./menuServices";
+import {getSumFoodAPI} from "./menu.service";
 import PagingBar from "../../components/commons/PagingBar";
 import FormAdd from "./Components/FormAdd";
 import FormEdit from "./Components/FormEdit";
@@ -26,7 +26,6 @@ const Menu = () => {
         setIsEdit(isEdit);
         setM_id(m_id);       
     }
-    console.log(m_id);
 
     //api paging
     const getSumFood = async () => {
@@ -51,12 +50,12 @@ const Menu = () => {
     }, []);
     
     return (
-        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-main-bg">
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-12">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-12">
                 {
                     isAdd && <FormAdd setIsAdd={setIsAdd}/>
                 }

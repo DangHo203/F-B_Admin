@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     deleteIngredientAPI,
     getIngredientByParamsAPI,
-} from "../ingredientServices";
+} from "../ingredient.service";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import FormEdit from "./FormEdit";
@@ -111,7 +111,7 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
                             key={index}
                             className={`flex ${item.justify} items-center ${item.colSpan}`}
                         >
-                            <p className="text-lg font-semibold">
+                            <p className="text-lg font-bold text-black opacity-50 py-2">
                                 {item.title}
                             </p>
                         </div>
@@ -141,10 +141,10 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
                                 <>
                                     <div
                                         key={index}
-                                        className=" grid grid-cols-10 grid-rows-1 w-full"
+                                        className={`" grid grid-cols-10 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${index !==9 ? `border-b-[1px]`: ""} border-gray-200"`}
                                     >
                                         <div className="flex justify-center items-center col-span-2">
-                                            <p className="text-lg font-semibold">
+                                            <p className="text-lg font-bold text-black opacity-50 py-2">
                                                 {item.ingredient_id}
                                             </p>
                                         </div>

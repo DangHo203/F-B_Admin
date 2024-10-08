@@ -1,0 +1,335 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+//icons
+import { LiaArrowRightSolid, LiaTimesCircle } from "react-icons/lia";
+import Tooltip from "@mui/material/Tooltip";
+import { MdOutlineDeliveryDining } from "react-icons/md";
+
+import {
+    getOrdersByParams,
+    getHistoryOrders,
+} from "../../../utils/Order/order.utils";
+import { IOrder } from "../../../types/order.interface";
+import OrderDetail from "./OrderDetail";
+
+import FormatDay from "../../../helper/FormatDay.helper";
+import FormatCurrency from "../../../helper/FormatCurrency.helper";
+
+import {
+    statusMap1,
+    statusMap2,
+    title,
+} from "../../../constant/order.constant";
+import TextColumn from "./TextColumn";
+import { cancelOrderAPI, changeStatusOrderAPI } from "../order.service";
+import { GetTime } from "../../../helper/GetTimeOnDate.helper";
+import Driver from "./ListDriver";
+
+interface ListOrdersProps {
+    isRender: boolean;
+    history?: number;
+}
+const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
+    const [isOpenFormDetail, setIsOpenFormDetail] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<number>(0);
+    const [selectedCustomer, setSelectedCustomer] = useState<number>(0);
+    const [isOpenShowSelectDriver, setIsOpenShowSelectDriver] = useState(false);
+
+    const [list, setList] = useState<IOrder[]>([]);
+    const navigate = useNavigate();
+    const [params] = useSearchParams();
+
+    const nextStage = async (status: string) => {
+        if (status === "Pending") {
+            return "Processing";
+        }
+        if (status === "Processing") {
+            return "Packed";
+        }
+        if (status === "Packed") {
+            return "Delivering";
+        }
+    };
+
+    const handleSelectDriver = async (order_id: number) => {};
+
+    const handleChangeStatus = async (status: string, id: number) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to confirm this order?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const stage = await nextStage(status);
+
+                    const rs = await changeStatusOrderAPI({
+                        order_id: id,
+                        status: stage,
+                    });
+                    if (rs?.status === 200) {
+                        toast.success("Change status success");
+                        fetchData();
+                    }
+                } catch (error) {
+                    toast.error("Change status failed");
+                }
+            }
+        });
+    };
+
+    const handleCancelOrder = async (id: number) => {
+        const { value: text } = await Swal.fire({
+            title: "Cancel order",
+            text: "Do you want to cancel this order?",
+            input: "textarea",
+            inputLabel: "Please input your message",
+            inputPlaceholder: "Type your message here...",
+            inputAttributes: {
+                "aria-label": "Type your message here",
+            },
+            showCancelButton: true,
+        });
+        if (text) {
+            try {
+                const rs = await cancelOrderAPI({
+                    order_id: id,
+                    message: text,
+                });
+                if (rs?.status === 200) {
+                    toast.success("Cancel order success");
+                    fetchData();
+                }
+            } catch (error) {
+                toast.error("Cancel order failed");
+            }
+        }
+    };
+    const fetchData = async () => {
+        if (history === 1) {
+            getOrdersByParams({
+                create_at: params.get("date"),
+                status: params.get("status"),
+                search: params.get("title"),
+                page: params.get("page") || 1,
+                limit: 10,
+                history: 1,
+            }).then((data) => {
+                setList(data);
+            });
+        } else {
+            getOrdersByParams({
+                create_at: params.get("date"),
+                status: params.get("status"),
+                search: params.get("title"),
+                page: params.get("page") || 1,
+                limit: 10,
+            }).then((data) => {
+                setList(data);
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [params, isRender, isOpenFormDetail]);
+
+    useEffect(() => {
+        if (list?.length === 0) {
+            params.delete("page");
+            params.append("page", "1");
+            navigate(`?${params.toString()}`);
+        }
+    }, [list]);
+    return (
+        <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
+            {isOpenFormDetail && (
+                <OrderDetail
+                    orderID={selectedOrder}
+                    userID={selectedCustomer}
+                    setIsShowDetail={setIsOpenFormDetail}
+                />
+            )}
+            {isOpenShowSelectDriver && (
+                <Driver
+                    setIsOpenShowSelectDriver={setIsOpenShowSelectDriver}
+                    handleSelectDriver={handleSelectDriver}
+                />
+            )}
+
+            <div className="grid grid-cols-12 grid-rows-1 w-full px-[30px]">
+                {title.map((item, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className={`flex ${item.justify} items-center ${item.colSpan}`}
+                        >
+                            <p className="text-lg font-bold text-black opacity-50 py-2">
+                                {item.title}
+                            </p>
+                        </div>
+                    );
+                })}
+            </div>
+            {list?.length === 0 ? (
+                <div className="w-full h-full grid-rows-10 bg-white rounded-[30px] flex items-center justify-center p-5">
+                    <span className="text-red-600 text-[25px] font-medium">
+                        No item find
+                    </span>
+                </div>
+            ) : (
+                <div className="w-full h-full grid grid-cols-1 grid-rows-10  bg-white rounded-[30px] items-center justify-center p-[30px] ">
+                    {list?.map((item: IOrder, index: number) => {
+                        return (
+                            <>
+                                <div
+                                    onClick={() => {
+                                        setSelectedOrder(item.order_id);
+                                        setSelectedCustomer(item.user_id);
+                                        setIsOpenFormDetail(true);
+                                    }}
+                                    key={index}
+                                    className={` grid grid-cols-12 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${
+                                        index !== 4 ? `border-b-[1px]` : ""
+                                    } border-gray-200`}
+                                >
+                                    <TextColumn
+                                        text={item.order_id.toString()}
+                                        classNameValue={
+                                            "justify-center items-center col-span-1"
+                                        }
+                                    />
+
+                                    <TextColumn
+                                        text={item.user_id.toString()}
+                                        classNameValue={
+                                            "justify-start items-center col-span-1"
+                                        }
+                                    />
+                                    <TextColumn
+                                        text={FormatCurrency(item.total_price)}
+                                        classNameValue={
+                                            "justify-start items-center col-span-1"
+                                        }
+                                    />
+                                    <TextColumn
+                                        text={item.message as string}
+                                        classNameValue={
+                                            "justify-start items-center col-span-3"
+                                        }
+                                    />
+
+                                    <div className="flex flex-row gap-2 w-full justify-start items-center col-span-1">
+                                        <div
+                                            className={`flex items-center justify-center`}
+                                        >
+                                            <div
+                                                className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
+                                                    item.status
+                                                )}`}
+                                            ></div>
+                                        </div>
+                                        <p
+                                            className={`text-sm font-semibold ${statusMap1.get(
+                                                item.status
+                                            )}`}
+                                        >
+                                            {item.status}
+                                        </p>
+                                    </div>
+                                    <TextColumn
+                                        text={
+                                            GetTime(item.delivery_time || "") ||
+                                            ""
+                                        }
+                                        classNameValue={
+                                            "justify-center items-center col-span-2"
+                                        }
+                                    />
+                                    <TextColumn
+                                        text={FormatDay(item.create_at)}
+                                        classNameValue={
+                                            "justify-center items-center col-span-2"
+                                        }
+                                    />
+
+                                    <div className="flex justify-center items-center p-2 col-span-1">
+                                        {item.status === "Pending" && (
+                                            <div
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleChangeStatus(
+                                                        item.status,
+                                                        item.order_id
+                                                    );
+                                                }}
+                                                className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
+                                            >
+                                                <Tooltip
+                                                    title="Confirm move to next stage"
+                                                    arrow
+                                                >
+                                                    <span>
+                                                        <LiaArrowRightSolid className="text-[30px] text-processing hover:text-orange-800" />
+                                                    </span>
+                                                </Tooltip>
+                                            </div>
+                                        )}
+                                        {item.status === "Packed" && (
+                                            <div
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    setIsOpenShowSelectDriver(
+                                                        true
+                                                    );
+                                                }}
+                                                className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
+                                            >
+                                                <Tooltip
+                                                    title="Confirm move to next stage"
+                                                    arrow
+                                                >
+                                                    <span>
+                                                        <MdOutlineDeliveryDining className="text-[30px] text-processing hover:text-orange-800 " />
+                                                    </span>
+                                                </Tooltip>
+                                            </div>
+                                        )}
+                                        {item.status !== "Cancelled" &&
+                                            item.status !== "Delivered" && (
+                                                <div
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        handleCancelOrder(
+                                                            item.order_id
+                                                        );
+                                                    }}
+                                                    className="w-full h-full flex flex-row items-center justify-center gap-2    "
+                                                >
+                                                    <Tooltip
+                                                        title="Cancel order"
+                                                        arrow
+                                                    >
+                                                        <span>
+                                                            <LiaTimesCircle className="text-[30px] text-cancelled hover:text-red-300" />
+                                                        </span>
+                                                    </Tooltip>
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default ListOrders;

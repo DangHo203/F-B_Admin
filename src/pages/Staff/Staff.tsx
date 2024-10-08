@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterBar from "./components/FilterBar";
 import ListStaff from "./components/ListStaff";
 import PagingBar from "../../components/commons/PagingBar";
-import { getSumStaffAPI } from "./staffServices";
+import { getSumStaffAPI } from "./staff.service";
 
 export default function Staff() {
     const navigate = useNavigate();
@@ -44,12 +44,12 @@ export default function Staff() {
         sessionStorage.setItem("active", "1");
     }, []);
     return (
-        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-main-bg">
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-12   ">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-12   ">
                 <FilterBar />
                 <ListStaff />
                 <PagingBar totalPage={totalPage}/>

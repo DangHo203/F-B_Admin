@@ -7,5 +7,10 @@ const path = {
     customer: "/customer",
     menu: "/menu",
     ingredient: "/ingredient",
+    order: "/order",
+    kitchen: "/kitchen",
+    history: "/history_order",
+    notification: "/notification",
+    shipper: "/shipper",
 };
 export default path;

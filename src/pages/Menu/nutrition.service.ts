@@ -9,7 +9,6 @@ export const getNutritionByIdAPI = async (id: any) => {
 };
 
 export const addNutritionAPI = async (data: any) => {
-    console.log(data);
     return await axios({
         method: "POST",
         url: "/nutrition",

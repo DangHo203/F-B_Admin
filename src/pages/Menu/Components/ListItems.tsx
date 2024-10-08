@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getFoodByParamsAPI, deleteFoodAPI } from "../menuServices";
+import { getFoodByParamsAPI, deleteFoodAPI } from "../menu.service";
 import Swal from "sweetalert2";
+import FormIngredients from "./FormIngredients";
+import FormNutrition from "./FormNutrition";
+
+//icon
+import { LiaEdit } from "react-icons/lia";
+import { MdOutlineDelete } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
+import { FiLink } from "react-icons/fi";
+import { FiBox } from "react-icons/fi";
+import FormatCurrency from "../../../helper/FormatCurrency.helper";
 
 const title = [
     {
@@ -49,6 +59,18 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
     const [list, setList] = useState<any[]>([]);
     const navigate = useNavigate();
     const [params] = useSearchParams();
+    const [isOpenFormNutri, setIsOpenFormNutri] = useState(false);
+    const [isOpenFormIngre, setIsOpenFormIngre] = useState(false);
+    const [id, setId] = useState("");
+
+    const handleOpenFormIngre = (id: string) => {
+        setId(id);
+        setIsOpenFormIngre(true);
+    };
+    const handleOpenFormNutri = (id: string) => {
+        setId(id);
+        setIsOpenFormNutri(true);
+    };
 
     const handleDelete = (id: string) => {
         Swal.fire({
@@ -71,8 +93,6 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                     Swal.fire("Error!", "Something went wrong", "error");
                 }
                 fetchData();
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                Swal.fire("Cancelled", "Your file is safe :)", "error");
             }
         });
     };
@@ -102,6 +122,20 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
     }, [list]);
     return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
+            {isOpenFormIngre && (
+                <FormIngredients
+                    item_id={id}
+                    setIsOpenFormIngre={setIsOpenFormIngre}
+                    isEdit={isOpenFormIngre}
+                />
+            )}
+            {isOpenFormNutri && (
+                <FormNutrition
+                    id={id}
+                    setIsOpenFormNutri={setIsOpenFormNutri}
+                    isEdit={isOpenFormNutri}
+                />
+            )}
             <div className="grid grid-cols-10 grid-rows-1 w-full px-5">
                 {title.map((item, index) => {
                     return (
@@ -109,7 +143,7 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                             key={index}
                             className={`flex ${item.justify} items-center ${item.colSpan}`}
                         >
-                            <p className="text-lg font-semibold">
+                            <p className="text-lg font-bold text-black opacity-50 py-2">
                                 {item.title}
                             </p>
                         </div>
@@ -141,23 +175,27 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                                 <>
                                     <div
                                         key={index}
-                                        className=" grid grid-cols-10 grid-rows-1 w-full"
+                                        className={`grid grid-cols-10 grid-rows-1 w-full  h-full rounded-[5px] hover:bg-blue-100 px-2 ${
+                                            index !== 4 ? `border-b-[1px]` : ""
+                                        } border-gray-200`}
                                     >
                                         <div className="flex justify-center items-center col-span-2">
-                                            <p className="text-lg font-semibold">
+                                            <p className="text-lg font-bold text-black opacity-50 py-2">
                                                 {item.title}
                                             </p>
                                         </div>
-                                        <div className="flex justify-start items-start col-span-1">
+                                        <div className="flex justify-start items-center col-span-1">
                                             <img
                                                 src={item.image}
                                                 alt=""
-                                                className="w-[75px] h-[75px] object-cover rounded-[10px]"
+                                                className="w-[75px] h-[75px] object-cover rounded-[10px] border border-gray-200"
                                             />
                                         </div>
                                         <div className="flex justify-start items-center col-span-1">
                                             <p className="text-sm text-gray-500">
-                                                {item.price}
+                                                {FormatCurrency(
+                                                    Number(item.price)
+                                                )}
                                             </p>
                                         </div>
 
@@ -179,7 +217,7 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                                                     </span>
                                                 ) : (
                                                     <span className="text-red-500 text-[15px] bg-red-200 p-2 rounded-md">
-                                                        Not Available
+                                                        Out of service
                                                     </span>
                                                 )}
                                             </p>
@@ -187,33 +225,44 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
 
                                         <div className="flex justify-center items-center gap-3 col-span-2">
                                             <div className="flex flex-row justify-between items-center text-[12px] gap-2">
-                                                <button className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400">
-                                                    Add Ingre
-                                                </button>
-                                                <button className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400">
-                                                    Nurti
+                                                <button
+                                                    onClick={() =>
+                                                        handleOpenFormIngre(
+                                                            item.item_id
+                                                        )
+                                                    }
+                                                    className="text-white text-[15px] bg-green-400 p-2 rounded-[30px] hover:bg-green-200 flex flex-row items-center"
+                                                >
+                                                    <FiBox className="text-[20px]" />
                                                 </button>
                                                 <button
+                                                    onClick={() =>
+                                                        handleOpenFormNutri(
+                                                            item.item_id
+                                                        )
+                                                    }
+                                                    className="text-yellow-100 text-[15px] bg-yellow-400 p-2 rounded-[30px] hover:bg-yellow-200 flex flex-row items-center"
+                                                >
+                                                    <FiLink className="text-[20px]" />
+                                                </button>
+
+                                                <LiaEdit
                                                     onClick={() =>
                                                         setIsEdit(
                                                             true,
                                                             item.item_id
                                                         )
                                                     }
-                                                    className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
+                                                    className="text-[30px] text-blue-300 hover:text-blue-500"
+                                                />
+                                                <MdOutlineDelete
                                                     onClick={() =>
                                                         handleDelete(
                                                             item.item_id
                                                         )
                                                     }
-                                                    className="text-white bg-red-500 p-2 rounded-md hover:bg-red-400"
-                                                >
-                                                    Delete
-                                                </button>
+                                                    className=" text-[30px] text-red-300 hover:text-red-500"
+                                                />
                                             </div>
                                             {/* <FaEye
                                                 onClick={() =>

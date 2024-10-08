@@ -10,17 +10,14 @@ import {
     changePassword,
     editUserAPI,
     uploadImageAPI,
-} from "./profileService";
+} from "./profile.service";
 import LoadingScreen from "../../components/commons/LoadingScreen";
-import { logout } from "../../redux/userSlice";
+import { logout } from "../../redux/slice/user.slice";
 import { useDispatch } from "react-redux";
 
 export default function Profile() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const isLogin = useSelector((state: any) => state.userSlice.isLogin);
-    const id = useSelector((state: any) => state.userSlice.id);
-
+    const { id, isLogin } = useSelector((state: any) => state.userSlice);
     const [isLoading, setIsLoading] = useState(false);
     const [isChangePassword, setIsChangePassword] = useState(false);
     const [isEditProfile, setIsEditProfile] = useState(false);
@@ -123,7 +120,6 @@ export default function Profile() {
                 oldPassword: oldPassword,
                 newPassword: newPassword,
             });
-            console.log(rs.status);
             if (rs.status === 200) {
                 Swal.fire({
                     icon: "success",
@@ -162,7 +158,6 @@ export default function Profile() {
             const formData = new FormData();
             formData.append("image", selectedImage || image);
             const rsImage = await uploadImageAPI(formData);
-            console.log(rsImage);
 
             const data = {
                 user_id: id,
@@ -195,29 +190,28 @@ export default function Profile() {
 
     const fetchUser = async () => {
         const rs = await getStaffByIdAPI(id);
-        console.log(rs);
-     
+
         setName(rs?.data?.data[0]?.fullName);
         setEmail(rs?.data?.data[0]?.email);
         setPhone(rs?.data?.data[0]?.phone);
         setImage(rs?.data?.data[0]?.image);
     };
     useEffect(() => {
-        if (!isLogin) {
-            navigate("/login");
-        }
+        // if (!isLogin) {
+        //     navigate("/login");
+        // }
         fetchUser();
         sessionStorage.setItem("active", "1");
     }, []);
 
     return (
-        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-main-bg">
             {isLoading && <LoadingScreen />}
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-11 p-2 flex justify-center items-center">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-11 p-2 flex justify-center items-center">
                 <div className="w-1/3 h-auto bg-white rounded-md">
                     <div className="w-full h-[10%] flex justify-center items-center">
                         <span className="text-[30px] font-bold px-5 pt-5">

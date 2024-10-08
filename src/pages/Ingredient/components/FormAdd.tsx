@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Input from "../../../components/commons/Input";
-import { addIngredientAPI } from "../ingredientServices";
+import { addIngredientAPI } from "../ingredient.service";
 import { toast } from "react-toastify";
 interface FormAddProps {
     isOpen: (value: boolean) => void;
@@ -19,7 +19,6 @@ const FormAdd: React.FC<FormAddProps> = ({ isOpen, setIsRender,isRender }) => {
             is_available: true,
             unit,
         });
-        console.log(rs);
         if (rs.status === 201) {
             toast.success("Add ingredient success");
             setIsRender(!isRender);

@@ -23,6 +23,14 @@ export const getSumIngredientAPI = async (params: any) => {
     });
 }
 
+export const getIngredientByIDAPI = async (id: any) => {
+    return await axios({
+        method: "GET",
+        url: "/ingredient/id",
+        params: { i_id: id },
+    });
+}
+
 export const getIngredientByIdAPI = async (id: any) => {
     return await axios({
         method: "GET",
@@ -78,5 +86,13 @@ export const deleteAllListItemIngredientAPI = async (data: any) => {
         method: "DELETE",
         url: "/ingredient/menu/all",
         params: data,
+    });
+}
+
+export const getListIngredientByIDAPI = async (id: any) => {
+    return await axios({
+        method: "GET",
+        url: "/ingredient/menu",
+        params: { item_id: id },
     });
 }

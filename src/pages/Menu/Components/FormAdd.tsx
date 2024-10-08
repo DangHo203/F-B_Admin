@@ -5,13 +5,13 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import FormNutrition from "./FormNutrition";
 import FormIngredients from "./FormIngredients";
 //api
-import { addNutritionAPI } from "../nutritionService";
-import { uploadImageAPI, addFoodAPI } from "../menuServices";
-import { addListItemIngredientAPI } from "../../Ingredient/ingredientServices";
+import { addNutritionAPI } from "../nutrition.service";
+import { uploadImageAPI, addFoodAPI } from "../menu.service";
+import { addListItemIngredientAPI } from "../../Ingredient/ingredient.service";
 import LoadingScreen from "../../../components/commons/LoadingScreen";
 import { toast } from "react-toastify";
 
-import { IIngredients, IFoodDetail } from "../../../types/Menu";
+import { IIngredients, IFoodDetail } from "../../../types/menu.interface";
 interface FormAddProps {
     setIsAdd: (value: boolean) => void;
 }
@@ -54,7 +54,7 @@ const FormAdd: React.FC<FormAddProps> = ({ setIsAdd }) => {
         
         const newError = {
             title: foodDetail?.food.title === "" ? "Title is required" : "",
-            price: foodDetail?.food.price === "" ? "Price is required" : "",
+            price: foodDetail?.food.price === "" || Number(foodDetail?.food.price) <0 ? "Price is required" : "",
             category:
                 foodDetail?.food.category === "" ? "Category is required" : "",
             description:

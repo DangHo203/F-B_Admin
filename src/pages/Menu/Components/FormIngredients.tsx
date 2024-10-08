@@ -5,16 +5,22 @@ import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 
 //api
-import { getIngredientAPI } from "../../Ingredient/ingredientServices";
+import {
+    addListItemIngredientAPI,
+    deleteAllListItemIngredientAPI,
+    getIngredientAPI,
+    getListIngredientByIDAPI,
+} from "../../Ingredient/ingredient.service";
 import { set } from "date-fns";
 
-import { IIngredients } from "../../../types/Menu";
+import { IIngredients } from "../../../types/menu.interface";
 
 interface FormIngretionProps {
     setIsOpenFormIngre: (value: boolean) => void;
     handleSaveIngretionData?: (data: any) => void;
     list?: IIngredients[];
     item_id?: string;
+    isEdit?: boolean;
 }
 
 const FormIngredients: React.FC<FormIngretionProps> = ({
@@ -22,6 +28,7 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
     handleSaveIngretionData,
     list,
     item_id,
+    isEdit,
 }) => {
     const [listIngredients, setListIngredients] = useState<IIngredients[]>(
         list || []
@@ -52,8 +59,7 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
         newList.splice(index, 1);
         setListIngredients(newList);
     };
-
-    const handleSave = () => {
+    const handleSave = async () => {
         if (isAdd) {
             //validate
             if (titleAdd === "" || quantityAdd === 0) {
@@ -86,7 +92,23 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
             setIsAdd(!isAdd);
             return;
         }
-
+        if (isEdit) {
+            if (listIngredients.length !== 0) {
+                const rs = await deleteAllListItemIngredientAPI({
+                    item_id: item_id,
+                });
+                listIngredients?.forEach(async (item) => {
+                    await addListItemIngredientAPI({
+                        item_id: item_id,
+                        quantity_required: item.quantity_required,
+                        ingredient_id: item.ingredient_id,
+                    });
+                });
+            }
+            toast.success("Update successfully");
+            setIsOpenFormIngre(false);
+            return;
+        }
         if (handleSaveIngretionData) {
             handleSaveIngretionData(listIngredients);
         }
@@ -95,6 +117,10 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
 
     //list Ingredients data
     const fetchData = async () => {
+        if (item_id && list === undefined) {
+            const rs = await getListIngredientByIDAPI(item_id);
+            setListIngredients(rs?.data?.result);
+        }
         const rs = await getIngredientAPI();
         return rs?.data?.result;
     };
@@ -119,14 +145,16 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                     Ingredients Information
                 </span>
 
-                <div className="grid grid-cols-3 grid-rows-1 px-[50px] text-[20px] font-bold">
+                <div className="grid grid-cols-3 grid-rows-1 px-[50px] text-[20px] font-bold border-b py-5">
                     <span>Title</span>
                     <span>Quantity Required</span>
-                    <div
-                        onClick={handleAddItem}
-                        className="text-[15px] flex flex-row items-center justify-center hover:text-blue-500 cursor-pointer"
-                    >
-                        <IoAddOutline className="text-[30px]" /> Add item
+                    <div className="w-full flex justify-center">
+                        <div
+                            onClick={handleAddItem}
+                            className="flex flex-row items-center justify-center text-[15px] bg-blue-400 text-blue-100 rounded-md p-1 hover:text-blue-500 cursor-pointer"
+                        >
+                            <IoAddOutline className="text-[20px]"/> {!isAdd ? "Add item" : "Undo"}
+                        </div>
                     </div>
                 </div>
                 <div className="h-[80%] w-full overflow-y-auto px-[50px] gap-2">
@@ -135,9 +163,6 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                             <select
                                 onChange={(e) => {
                                     setTitleAdd(
-                                        e.target.selectedOptions[0].text
-                                    );
-                                    console.log(
                                         e.target.selectedOptions[0].text
                                     );
                                     setIdAdd(e.target.value);
@@ -175,7 +200,6 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                         </div>
                     )}
                     {listIngredients?.map((item, index) => {
-                        console.log("hiii",item);
                         return (
                             <>
                                 <div

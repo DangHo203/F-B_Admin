@@ -7,7 +7,7 @@ import ListStaff from "./components/ListCustomer";
 import FilterBar from "./components/FilterBar";
 import PagingBar from "../../components/commons/PagingBar";
 import DisplayInformation from "./components/DisplayInformation";
-import { getSumCustomerAPI } from "./customerServices";
+import { getSumCustomerAPI } from "./customer.service";
 
 export default function Customer() {
     const navigate = useNavigate();
@@ -40,12 +40,12 @@ export default function Customer() {
     }, []);
 
     return (
-        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-main-bg">
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-12">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-12">
                 <FilterBar />
                 <ListStaff />
                 <PagingBar totalPage={totalPage} />

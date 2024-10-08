@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Input from "../../../components/commons/Input";
-import { getIngredientByIdAPI, editIngredientAPI } from "../ingredientServices";
+import { getIngredientByIDAPI, editIngredientAPI } from "../ingredient.service";
 import { toast } from "react-toastify";
 
 interface FormEditProps {
@@ -11,14 +11,12 @@ const FormEdit: React.FC<FormEditProps> = ({ isOpen, i_id }) => {
     const [name, setName] = useState("");
     const [stock, setStock] = useState("");
     const [unit, setUnit] = useState("");
-    console.log(i_id);
 
     const fetchData = async () => {
-        const rs = await getIngredientByIdAPI(i_id);
-        console.log(rs);
-        setName(rs.data.result[0].name);
-        setStock(rs.data.result[0].stock);
-        setUnit(rs.data.result[0].unit);
+        const rs = await getIngredientByIDAPI(i_id);
+        setName(rs?.data?.result[0]?.name);
+        setStock(rs?.data?.result[0]?.stock);
+        setUnit(rs?.data?.result[0]?.unit);
     };
 
     const handleEdit = async () => {
@@ -29,7 +27,6 @@ const FormEdit: React.FC<FormEditProps> = ({ isOpen, i_id }) => {
             is_available: true,
             unit,
         });
-        console.log("hiasdaosdj",rs);
         if (rs.status === 200) {
             toast.success("Edit ingredient success");
             isOpen(false);

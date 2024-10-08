@@ -7,9 +7,10 @@ import path from "../../utils/path";
 
 //redux
 import { useDispatch } from "react-redux";
-import { login } from "../../redux/userSlice";
+import { login } from "../../redux/slice/user.slice";
 
 import swal from "sweetalert2";
+import { escape } from "querystring";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function Login() {
             username.trim(),
             password.trim()
         );
+        console.log(rs);
         const { status } = rs;
 
         if (rs?.status === 200) {
@@ -30,6 +32,7 @@ export default function Login() {
                 login({
                     token: rs?.data?.data.token,
                     id: rs?.data?.data.user.user_id,
+                    role: rs?.data?.data.role,
                 })
             );
 
@@ -64,12 +67,14 @@ export default function Login() {
         if (isLogin) {
             navigate(path.home);
         }
-    }, []);
+    }, [isLogin, navigate]);
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center bg-slate-300">
-            <div className="rounded-[30px] px-[50px] w-1/3 h-1/2 bg-white flex flex-col justify-center items-center gap-5">
-                <span className="text-[30px] font-bold">Login</span>
+        <div className="w-screen h-screen flex justify-center items-center bg-main-bg px-3 lg:px-0">
+            <div className="rounded-[30px] px-5 py-5 sm:px-[50px] w-full sm:w-1/2 lg:w-1/3 h-auto sm:h-1/2 bg-white flex flex-col justify-center items-center gap-5">
+                <span className="text-[24px] sm:text-[30px] font-bold">
+                    Login
+                </span>
 
                 <div className="w-full flex flex-col justify-start">
                     <span>Email</span>
@@ -100,13 +105,13 @@ export default function Login() {
                 </div>
                 <div
                     onClick={handleSubmit}
-                    className="text-white hover:bg-blue-200 w-1/2 h-[50px] bg-blue-500 flex justify-center items-center rounded-md"
+                    className="text-white hover:bg-blue-200 w-full sm:w-1/2 h-[50px] bg-blue-500 flex justify-center items-center rounded-md cursor-pointer"
                 >
                     Login
                 </div>
-                <span>
+                <span className="text-center">
                     Doesn't have an account,{" "}
-                    <a href={path.register} className=" font-bold">
+                    <a href={path.register} className="font-bold">
                         Register
                     </a>{" "}
                 </span>

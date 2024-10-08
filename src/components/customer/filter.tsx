@@ -68,7 +68,7 @@ export default function Filter() {
     const handleFilterGender = (event: SelectChangeEvent) => {
         params.delete("page");
         params.append("page", "1");
-        console.log(event.target.value);
+
         setGender(event.target.value);
         params.delete("gender");
         params.append("gender", event.target.value);

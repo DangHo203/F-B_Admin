@@ -8,7 +8,7 @@ import FormEdit from "./components/FormEdit";
 
 import PagingBar from "../../components/commons/PagingBar";
 //api
-import { getSumIngredientAPI } from "./ingredientServices";
+import { getSumIngredientAPI } from "./ingredient.service";
 import ListIngredients from "./components/ListIngredients";
 import Filter from "../../components/customer/filter";
 import FilterBar from "./components/FilterBar";
@@ -47,12 +47,12 @@ export default function Staff() {
         sessionStorage.setItem("active", "1");
     }, []);
     return (
-        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-slate-300">
+        <div className="w-screen h-screen grid grid-cols-6 grid-rows-12 bg-main-bg">
             {/* sidebar */}
             <SideBar />
 
             {/* content */}
-            <div className="w-full h-full bg-slate-300 col-span-5 row-span-12   ">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-12   ">
                 {isAdd && <FormAdd isOpen={setIsAdd} setIsRender={setIsRender} isRender={isRender}/>}
                
                 <FilterBar setIsAdd={setIsAdd} />

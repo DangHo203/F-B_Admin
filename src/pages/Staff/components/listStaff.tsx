@@ -1,45 +1,12 @@
 import { useEffect, useState } from "react";
-import { getStaffByParamsAPI, deleteStaffAPI } from "../staffServices";
+import { getStaffByParamsAPI, deleteStaffAPI } from "../staff.service";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import FormUpdate from "./FormUpdate";
-import { logout } from "../../../redux/userSlice";
 import { useDispatch } from "react-redux";
+import { LiaTrashAlt } from "react-icons/lia";
 
-const title = [
-    {
-        title: "Name",
-        colSpan: "col-span-2",
-    },
-    {
-        title: "Phone",
-        colSpan: "col-span-2",
-    },
-    {
-        title: "Role",
-        colSpan: "col-span-1",
-    },
-    {
-        title: "Status",
-        colSpan: "col-span-1",
-    },
-    {
-        title: "Point",
-        colSpan: "col-span-1",
-    },
-    {
-        title: "Action",
-        colSpan: "col-span-1",
-    },
-];
-
-function StatusButton({ color, text }: { color: string; text: string }) {
-    return (
-        <div className={`flex justify-center items-center rounded-[20px] p-2`}>
-            <p className={`text-sm text-${color}-500`}>{text}</p>
-        </div>
-    );
-}
+import { title, statusMap1, statusMap2 } from "../../../constant/staff.constant";
 
 export default function ListStaff() {
     const navigate = useNavigate();
@@ -96,14 +63,14 @@ export default function ListStaff() {
 
     return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center p-2">
-            <div className="grid grid-cols-8 grid-rows-1 w-full px-5">
+            <div className="grid grid-cols-8 grid-rows-1 w-[80%] px-5">
                 {title.map((item, index) => {
                     return (
                         <div
                             key={index}
                             className={`flex justify-start items-center ${item.colSpan}`}
                         >
-                            <p className="text-lg font-semibold">
+                            <p className="text-lg font-bold text-black opacity-50 py-2 ">
                                 {item.title}
                             </p>
                         </div>
@@ -111,24 +78,27 @@ export default function ListStaff() {
                 })}
             </div>
             {list?.length === 0 ? (
-                <div className="w-full h-full grid-rows-5 bg-white rounded-[30px] flex items-center justify-center p-5">
+                <div className="w-[80%] h-full grid-rows-5 bg-white rounded-[30px] flex items-center justify-center p-5">
                     <span className="text-red-600 text-[25px] font-medium">
                         No item find
                     </span>
                 </div>
             ) : (
-                <div className="w-full h-full grid grid-cols-1 grid-rows-5 bg-white rounded-[30px] items-center justify-center p-5">
+                <div className="w-[80%] h-full grid grid-cols-1 grid-rows-5 bg-white rounded-[30px] items-center justify-center p-5">
                     {list?.map(
-                        (item: {
-                            user_id: number;
-                            image: string;
-                            fullName: string;
-                            email: string;
-                            phone: string;
-                            role: string;
-                            status: string;
-                            point: number;
-                        }) => {
+                        (
+                            item: {
+                                user_id: number;
+                                image: string;
+                                fullName: string;
+                                email: string;
+                                phone: string;
+                                role: string;
+                                status: string;
+                                point: number;
+                            },
+                            index: number
+                        ) => {
                             return (
                                 <>
                                     {isOpenFormUpdate &&
@@ -141,17 +111,22 @@ export default function ListStaff() {
                                             />
                                         )}
                                     <div
+                                        onClick={() =>
+                                            handleOpenFormUpdate(item.user_id)
+                                        }
                                         key={item.user_id}
-                                        className=" grid grid-cols-8 grid-rows-1 w-full"
+                                        className={` grid grid-cols-8 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 px-2 ${
+                                            index !== 4 ? `border-b-[1px]` : ""
+                                        } border-gray-200`}
                                     >
-                                        <div className="flex justify-start items-start col-span-2">
+                                        <div className="flex justify-start items-center col-span-2">
                                             <img
                                                 src={item.image}
                                                 alt=""
                                                 className="w-12 h-12 rounded-full"
                                             />
                                             <div className="ml-2">
-                                                <p className="text-lg font-semibold">
+                                                <p className="text-lg font-bold text-black opacity-50 py-2">
                                                     {item.fullName}
                                                 </p>
                                                 <p className="text-sm text-gray-500">
@@ -169,58 +144,41 @@ export default function ListStaff() {
                                                 {item.role}
                                             </p>
                                         </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            {item.status === "active" && (
-                                                <StatusButton
-                                                    color="green"
-                                                    text="Active"
-                                                />
-                                            )}
-                                            {item.status === "pending" && (
-                                                <StatusButton
-                                                    color="yellow"
-                                                    text="Pending"
-                                                />
-                                            )}
-                                            {item.status === "off" && (
-                                                <StatusButton
-                                                    color="gray"
-                                                    text="Off"
-                                                />
-                                            )}
-                                            {item.status === "banned" && (
-                                                <StatusButton
-                                                    color="red"
-                                                    text="Banned"
-                                                />
-                                            )}
+
+                                        <div className="flex flex-row gap-2 justify-start items-center col-span-1">
+                                            <div
+                                                className={`flex items-center justify-center`}
+                                            >
+                                                <div
+                                                    className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
+                                                        item.status
+                                                    )}`}
+                                                ></div>
+                                            </div>
+                                            <p
+                                                className={`text-sm font-semibold ${statusMap1.get(
+                                                    item.status
+                                                )}`}
+                                            >
+                                                {item.status}
+                                            </p>
                                         </div>
+
                                         <div className="flex justify-start items-center col-span-1">
                                             <p className="text-sm text-gray-500">
                                                 {item.point}
                                             </p>
                                         </div>
                                         <div className="flex justify-start items-center col-span-1">
-                                            <button
-                                                onClick={() =>
-                                                    handleOpenFormUpdate(
-                                                        item.user_id
-                                                    )
-                                                }
-                                                className="bg-blue-500 text-white p-1 rounded-md"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() =>
+                                            <LiaTrashAlt
+                                                onClick={(event) => {
+                                                    event?.stopPropagation();
                                                     handleDelete(
                                                         item.user_id.toString()
-                                                    )
-                                                }
-                                                className="bg-red-500 text-white p-1 rounded-md ml-2"
-                                            >
-                                                Delete
-                                            </button>
+                                                    );
+                                                }}
+                                                className=" text-cancelled text-[40px] p-1 rounded-md ml-2"
+                                            />
                                         </div>
                                     </div>
                                 </>

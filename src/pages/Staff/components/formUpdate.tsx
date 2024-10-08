@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { updateStaffAPI, getStaffByIdAPI } from "../staffServices";
+import { updateStaffAPI, getStaffByIdAPI } from "../staff.service";
 import Swal from "sweetalert2";
 
 interface FormUpdateProps {
@@ -18,7 +18,6 @@ const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
     const [isEmailError, setIsEmailError] = useState(false);
     const [isPhoneError, setIsPhoneError] = useState(false);
 
-    console.log(_id);
     const fetchData = async () => {
         const rs = await getStaffByIdAPI(_id);
         const data = rs?.data?.data[0];
@@ -41,7 +40,6 @@ const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
             role: role,
             status: status,
         });
-        console.log(rs);
         if (rs?.status === 410) {
             setIsEmailError(true);
             return;

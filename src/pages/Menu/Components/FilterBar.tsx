@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import { GrPowerReset } from "react-icons/gr";
+import { FaArrowsRotate } from "react-icons/fa6";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { IoAddOutline } from "react-icons/io5";
+
 
 interface FilterBarProps {
     setIsAdd: (value: boolean) => void;
@@ -63,9 +64,9 @@ const FilterBar: React.FC<FilterBarProps> = ({
     };
 
     return (
-        <div className="w-full h-[10%] bg-transparent p-2 flex justify-center items-center">
+        <div className="w-full h-[10%] bg-transparent px-5 py-2 flex justify-center items-center">
 
-            <div className=" w-full h-full flex justify-start items-center bg-white rounded-[30px] gap-5 px-5">
+            <div className=" w-full h-full flex justify-start items-center bg-white rounded-[20px] gap-5 px-5">
                 <label htmlFor="search">Search</label>
                 <input
                     type="text"
@@ -88,8 +89,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
                             onChange={handleChangeStatus}
                             className="w-auto h-[40px] p-2 border border-gray-300 rounded-md bg-white flex items-center"
                         >
-                            <MenuItem value={"active"}>Active</MenuItem>
-                            <MenuItem value={"banned"}>Banned</MenuItem>
+                            <MenuItem value={"1"}>Available</MenuItem>
+                            <MenuItem value={"0"}>Out of service</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -113,7 +114,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                     </FormControl>
                 </Box>
 
-                <GrPowerReset
+                <FaArrowsRotate
                     onClick={handleReset}
                     className="text-[30px] hover:text-rose-600"
                 />

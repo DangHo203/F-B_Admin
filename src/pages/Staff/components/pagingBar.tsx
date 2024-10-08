@@ -1,7 +1,7 @@
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import { useEffect, useMemo, useState } from "react";
-import { getSumStaffAPI } from "../staffServices";
+import { getSumStaffAPI } from "../staff.service";
 import { useNavigate, useSearchParams } from "react-router-dom";
 export default function PagingBar() {
     const navigate = useNavigate();
