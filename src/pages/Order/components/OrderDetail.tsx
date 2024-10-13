@@ -13,11 +13,13 @@ interface OrderDetailProps {
     setIsShowDetail: (value: boolean) => void;
     orderID?: number;
     userID?: number;
+    status?: string;
 }
 const OrderDetail: React.FC<OrderDetailProps> = ({
     setIsShowDetail,
     orderID,
     userID,
+    status
 }) => {
   
     const { data, isLoading } = useQuery({
@@ -32,13 +34,14 @@ const OrderDetail: React.FC<OrderDetailProps> = ({
             onClick={(event) => {
                 setIsShowDetail(false);
             }}
-            className="fixed inset-0 z-40 bg-opacity-65 bg-gray-200 w-screen h-screen p-[100px] flex justify-center items-center"
+            className="fixed inset-0 z-40 bg-opacity-65 bg-gray-200 w-screen h-screen p-[100px] flex justify-center items-center gap-5"
         >
+            
             <div
                 onClick={(event) => {
                     event?.stopPropagation();
                 }}
-                className="bg-white z-50 w-[100%] h-auto flex flex-col shadow-2xl rounded-md p-5 gap-5"
+                className={`bg-white z-50 ${status === "Delivering" ? "w-[70%]":"w-[100%]"} h-auto flex flex-col shadow-2xl rounded-md p-5 gap-5`}
             >
                 <div className="w-full h-full flex flex-row justify-center items-center gap-5 ">
                     <div className="w-1/2 h-full flex flex-col justify-start p-[20px] hover:bg-blue-50 border">
@@ -139,6 +142,34 @@ const OrderDetail: React.FC<OrderDetailProps> = ({
                     <StepperComponents status={data?.order.status} />
                 </div>
             </div>
+            {
+                status === "Delivering" && (
+                    <div className="bg-white z-50 w-[30%] h-full flex flex-col shadow-2xl rounded-md p-5 gap-5">
+                        <div className="w-full h-full flex flex-col justify-start p-[20px] hover:bg-blue-50 border">
+
+                        </div>
+                            <span className="text-[18px] font-bold w-full text-center pb-3">
+                                Shipper Information
+                            </span>
+                            <div className="w-full h-[50%] flex flex-col justify-start">
+                                <TextFieldComponent
+                                    label="Full name:"
+                                    value={""}
+                                />
+                                <TextFieldComponent
+                                    label="Phone Number:"
+                                    value={ ""}
+                                />
+                                <TextFieldComponent
+                                    label="Email:"
+                                    value={ ""}
+                                />
+                         
+                            </div>
+                        </div>
+                   
+                )
+            }
             <div
                 onClick={() => setIsShowDetail(false)}
                 className="text-red-600 cursor-pointer text-[50px] absolute top-5 right-10 hover:text-red-200"

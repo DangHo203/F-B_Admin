@@ -1,9 +1,11 @@
 import React, { lazy, useEffect, startTransition, Suspense } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-
+import ShiftScheduler from "./pages/test/shift";
+import ShiftSchedulerCalendar from "./pages/test/calendar";
+import { permissionPath } from "./constant/permission.constant";
 const DashBoard = lazy(() => import("./pages/Dashboard/Dashboard"));
 const Login = lazy(() => import("./pages/Auth/Login"));
 const Register = lazy(() => import("./pages/Auth/Register"));
@@ -17,8 +19,16 @@ const Kitchen = lazy(() => import("./pages/Kitchen/KitchenFlow"));
 const HistoryOrder = lazy(() => import("./pages/HistoryOrder/History"));
 const Notification = lazy(() => import("./pages/Notification/Notification"));
 const Shipper = lazy(() => import("./pages/Shipper/Shipper"));
+const Schedule = lazy(() => import("./pages/ShiftSchedule/Schedule"));
+
+// const MapTest = lazy(() => import("./pages/test/Map/Map"));
+
 function App() {
-    const {isLogin,role} = useSelector((state: any) => state.userSlice);
+    const { isLogin, role, permissions } = useSelector(
+        (state: any) => state.userSlice
+    );
+    const pathname = window.location.pathname;
+
     const navigate = useNavigate();
     useEffect(() => {
         startTransition(() => {
@@ -27,6 +37,19 @@ function App() {
             }
             if (role == "shipper" && window.location.pathname !== "/shipper") {
                 navigate("/shipper");
+            }
+
+            //check permission
+            const checkPermission = permissionPath.find(
+                (item) => item.path === pathname
+            );
+            console.log(checkPermission);
+            if (
+                checkPermission &&
+                !permissions.includes(checkPermission.permission)
+            ) {
+                toast.error("Permission denied");
+                navigate("/");
             }
         });
     }, [isLogin, navigate]);
@@ -40,6 +63,10 @@ function App() {
 
                     {isLogin && (
                         <>
+                            <Route
+                                path="/test"
+                                // element={<MapTest />}
+                            />
                             <Route path="/shipper" element={<Shipper />} />
                             <Route path="/" element={<DashBoard />} />
                             <Route path="/profile" element={<Profile />} />
@@ -60,6 +87,7 @@ function App() {
                                 path="/notification"
                                 element={<Notification />}
                             />
+                            <Route path="/schedule" element={<Schedule />} />
                         </>
                     )}
                 </Routes>

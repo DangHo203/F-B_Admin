@@ -1,31 +1,42 @@
+import { useEffect, useState } from "react";
 import OrderCard from "./OrderCard";
+import SocketSingleton from "../../../socket";
+import { fetchOrder } from '../../../utils/Order/order.utils';
+import { getShipperOrders } from "../shipper.service";
+import { useSelector } from "react-redux";
 
 interface ListOrdersProps {
-
 }
-
-const orders = [
-    {
-        order_id: 1,
-        time: "2021-09-01 12:00:00",     
-    },
-    {
-        order_id: 1,
-        time: "2021-09-01 12:00:00",   
-    },
-    {
-        order_id: 1,
-        time: "2021-09-01 12:00:00",   
-    },
-    {
-        order_id: 1,
-        time: "2021-09-01 12:00:00",   
-    },
-    
-    
-]
 const ListOrders: React.FC<ListOrdersProps> = ({
+    
 }) => {
+    const socket = SocketSingleton.getInstance();
+    const {id} = useSelector((state: any) => state.userSlice);
+    const [list, setList] = useState([]);
+
+    useEffect(() => {
+        const handleOrderOnArrive = () => {
+            console.log('orderOnArrive');
+        };
+
+        socket.emit("getListOrder");
+
+        socket.on('orderOnArrive', (data) => {
+            fetchOrders();
+        });
+
+        return () => {
+            socket.off('orderOnArrive', handleOrderOnArrive);
+        };
+    }, []);
+    const fetchOrders = async () => {
+        const rs = await getShipperOrders(id);
+        setList(rs?.data.result);
+    }
+    useEffect(() => {
+        fetchOrders();
+    }, [socket]);
+
     return (
         <div className="bg-main-bg w-full h-full px-5 pt-[50px] flex flex-col justify-start items-start overflow-y-auto gap-2">
 
@@ -33,9 +44,15 @@ const ListOrders: React.FC<ListOrdersProps> = ({
                 <span className="text-[25px] font-bold">Your orders</span>
             </div>
             <div className="overflow-y-auto scrollbar-hidden flex flex-col h-[80%] w-full gap-2">
-                {orders.map((order, index) => {
+                {
+                    list.length === 0 && <span className="text-[20px] font-light text-center">No orders here, you are free!!</span>
+                }
+                {list?.map((order:{
+                    order_id: number,
+                    delivery_time: string
+                }, index) => {
                     return (
-                        <OrderCard order_id={order.order_id} time={order.time}/>
+                        <OrderCard fetchOrders={fetchOrders} order_id={order.order_id} time={order.delivery_time}/>
                     )
                 })}
             </div>

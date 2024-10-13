@@ -6,7 +6,11 @@ import FormUpdate from "./FormUpdate";
 import { useDispatch } from "react-redux";
 import { LiaTrashAlt } from "react-icons/lia";
 
-import { title, statusMap1, statusMap2 } from "../../../constant/staff.constant";
+import {
+    title,
+    statusMap1,
+    statusMap2,
+} from "../../../constant/staff.constant";
 
 export default function ListStaff() {
     const navigate = useNavigate();
@@ -96,92 +100,93 @@ export default function ListStaff() {
                                 role: string;
                                 status: string;
                                 point: number;
+                                permissions: string[];
                             },
                             index: number
                         ) => {
+                          
                             return (
-                                <>
+                                <div
+                                    onClick={() =>
+                                        handleOpenFormUpdate(item.user_id)
+                                    }
+                                    key={item.user_id}
+                                    className={` grid grid-cols-8 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 px-2 ${
+                                        index !== 4 ? `border-b-[1px]` : ""
+                                    } border-gray-200`}
+                                >
                                     {isOpenFormUpdate &&
                                         selectedItem === item.user_id && (
                                             <FormUpdate
-                                                _id={item.user_id.toString()}
+                                                permissions={item.permissions}
+                                                _id={item.user_id}
                                                 handleOpenFormUpdate={
                                                     handleOpenFormUpdate
                                                 }
                                             />
                                         )}
-                                    <div
-                                        onClick={() =>
-                                            handleOpenFormUpdate(item.user_id)
-                                        }
-                                        key={item.user_id}
-                                        className={` grid grid-cols-8 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 px-2 ${
-                                            index !== 4 ? `border-b-[1px]` : ""
-                                        } border-gray-200`}
-                                    >
-                                        <div className="flex justify-start items-center col-span-2">
-                                            <img
-                                                src={item.image}
-                                                alt=""
-                                                className="w-12 h-12 rounded-full"
-                                            />
-                                            <div className="ml-2">
-                                                <p className="text-lg font-bold text-black opacity-50 py-2">
-                                                    {item.fullName}
-                                                </p>
-                                                <p className="text-sm text-gray-500">
-                                                    {item.email}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-2">
+                                    <div className="flex justify-start items-center col-span-2">
+                                        <img
+                                            src={item.image}
+                                            alt=""
+                                            className="w-12 h-12 rounded-full"
+                                        />
+                                        <div className="ml-2">
+                                            <p className="text-lg font-bold text-black opacity-50 py-2">
+                                                {item.fullName}
+                                            </p>
                                             <p className="text-sm text-gray-500">
-                                                {item.phone}
+                                                {item.email}
                                             </p>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.role}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex flex-row gap-2 justify-start items-center col-span-1">
-                                            <div
-                                                className={`flex items-center justify-center`}
-                                            >
-                                                <div
-                                                    className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
-                                                        item.status
-                                                    )}`}
-                                                ></div>
-                                            </div>
-                                            <p
-                                                className={`text-sm font-semibold ${statusMap1.get(
-                                                    item.status
-                                                )}`}
-                                            >
-                                                {item.status}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.point}
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <LiaTrashAlt
-                                                onClick={(event) => {
-                                                    event?.stopPropagation();
-                                                    handleDelete(
-                                                        item.user_id.toString()
-                                                    );
-                                                }}
-                                                className=" text-cancelled text-[40px] p-1 rounded-md ml-2"
-                                            />
                                         </div>
                                     </div>
-                                </>
+                                    <div className="flex justify-start items-center col-span-2">
+                                        <p className="text-sm text-gray-500">
+                                            {item.phone}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.role}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-row gap-2 justify-start items-center col-span-1">
+                                        <div
+                                            className={`flex items-center justify-center`}
+                                        >
+                                            <div
+                                                className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
+                                                    item.status
+                                                )}`}
+                                            ></div>
+                                        </div>
+                                        <p
+                                            className={`text-sm font-semibold ${statusMap1.get(
+                                                item.status
+                                            )}`}
+                                        >
+                                            {item.status}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.point}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <LiaTrashAlt
+                                            onClick={(event) => {
+                                                event?.stopPropagation();
+                                                handleDelete(
+                                                    item.user_id.toString()
+                                                );
+                                            }}
+                                            className=" text-cancelled text-[40px] p-1 rounded-md ml-2 hover:text-red-200"
+                                        />
+                                    </div>
+                                </div>
                             );
                         }
                     )}

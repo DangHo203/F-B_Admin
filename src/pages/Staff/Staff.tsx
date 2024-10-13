@@ -51,6 +51,7 @@ export default function Staff() {
             {/* content */}
             <div className="w-full h-full bg-main-bg col-span-5 row-span-12   ">
                 <FilterBar />
+
                 <ListStaff />
                 <PagingBar totalPage={totalPage}/>
             </div>

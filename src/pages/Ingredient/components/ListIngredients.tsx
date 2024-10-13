@@ -44,11 +44,9 @@ const title = [
 interface ListIngredientsProps {
     isRender: boolean;
 }
-const ListIngredients: React.FC<ListIngredientsProps> = ({
-    isRender,
-}) => {
-    const [isEdit,setIsEdit] = useState(false);
-    const [id,setId] = useState("");
+const ListIngredients: React.FC<ListIngredientsProps> = ({ isRender }) => {
+    const [isEdit, setIsEdit] = useState(false);
+    const [id, setId] = useState("");
     const [list, setList] = useState<any[]>([]);
     const navigate = useNavigate();
     const [params] = useSearchParams();
@@ -77,7 +75,7 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
     const handleEdit = async (id: string) => {
         setId(id);
         setIsEdit(true);
-    }
+    };
 
     const fetchData = async () => {
         const data = {
@@ -92,7 +90,7 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
 
     useEffect(() => {
         fetchData();
-    }, [params, isRender,isEdit]);
+    }, [params, isRender, isEdit]);
 
     useEffect(() => {
         if (list?.length === 0) {
@@ -100,10 +98,10 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
             params.append("page", "1");
             navigate(`?${params.toString()}`);
         }
-        }, [list]);
-        return (
+    }, [list]);
+    return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
-             {isEdit && <FormEdit isOpen={setIsEdit} i_id ={id} />}
+            {isEdit && <FormEdit isOpen={setIsEdit} i_id={id} />}
             <div className="grid grid-cols-10 grid-rows-1 w-full px-5">
                 {title.map((item, index) => {
                     return (
@@ -138,72 +136,74 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({
                             index: number
                         ) => {
                             return (
-                                <>
-                                    <div
-                                        key={index}
-                                        className={`" grid grid-cols-10 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${index !==9 ? `border-b-[1px]`: ""} border-gray-200"`}
-                                    >
-                                        <div className="flex justify-center items-center col-span-2">
-                                            <p className="text-lg font-bold text-black opacity-50 py-2">
-                                                {item.ingredient_id}
-                                            </p>
-                                        </div>
+                                <div
+                                    key={index}
+                                    className={`" grid grid-cols-10 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${
+                                        index !== 9 ? `border-b-[1px]` : ""
+                                    } border-gray-200"`}
+                                >
+                                    <div className="flex justify-center items-center col-span-2">
+                                        <p className="text-lg font-bold text-black opacity-50 py-2">
+                                            {item.ingredient_id}
+                                        </p>
+                                    </div>
 
-                                        <div className="flex justify-start items-center col-span-3">
-                                            <p className="text-sm text-gray-500">
-                                                {item.name}
-                                            </p>
-                                        </div>
+                                    <div className="flex justify-start items-center col-span-3">
+                                        <p className="text-sm text-gray-500">
+                                            {item.name}
+                                        </p>
+                                    </div>
 
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.stock}
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.unit}
-                                            </p>
-                                        </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.stock}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.unit}
+                                        </p>
+                                    </div>
 
-                                        <div className="flex justify-center items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.is_available === 1 ? (
-                                                    <span className="text-green-500 text-[15px] bg-green-200 p-2 rounded-md">
-                                                        Available
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-red-500 text-[15px] bg-red-200 p-2 rounded-md">
-                                                        Not Available
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </div>
+                                    <div className="flex justify-center items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.is_available === 1 ? (
+                                                <span className="text-green-500 text-[15px] bg-green-200 p-2 rounded-md">
+                                                    Available
+                                                </span>
+                                            ) : (
+                                                <span className="text-red-500 text-[15px] bg-red-200 p-2 rounded-md">
+                                                    Not Available
+                                                </span>
+                                            )}
+                                        </p>
+                                    </div>
 
-                                        <div className="flex justify-center items-center gap-3 col-span-2">
-                                            <div className="flex flex-row justify-between items-center text-[12px] gap-2">
-                                                <button
-                                                    onClick={() =>
-                                                        handleEdit(item.ingredient_id)
-                                                    }
-                                                    className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            item.ingredient_id
-                                                        )
-                                                    }
-                                                    className="text-white bg-red-500 p-2 rounded-md hover:bg-red-400"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
+                                    <div className="flex justify-center items-center gap-3 col-span-2">
+                                        <div className="flex flex-row justify-between items-center text-[12px] gap-2">
+                                            <button
+                                                onClick={() =>
+                                                    handleEdit(
+                                                        item.ingredient_id
+                                                    )
+                                                }
+                                                className="text-white bg-blue-500 p-2 rounded-md hover:bg-blue-400"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(
+                                                        item.ingredient_id
+                                                    )
+                                                }
+                                                className="text-white bg-red-500 p-2 rounded-md hover:bg-red-400"
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             );
                         }
                     )}

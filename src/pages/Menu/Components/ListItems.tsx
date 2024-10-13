@@ -172,99 +172,94 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                             index: number
                         ) => {
                             return (
-                                <>
-                                    <div
-                                        key={index}
-                                        className={`grid grid-cols-10 grid-rows-1 w-full  h-full rounded-[5px] hover:bg-blue-100 px-2 ${
-                                            index !== 4 ? `border-b-[1px]` : ""
-                                        } border-gray-200`}
-                                    >
-                                        <div className="flex justify-center items-center col-span-2">
-                                            <p className="text-lg font-bold text-black opacity-50 py-2">
-                                                {item.title}
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <img
-                                                src={item.image}
-                                                alt=""
-                                                className="w-[75px] h-[75px] object-cover rounded-[10px] border border-gray-200"
+                                <div
+                                    key={index}
+                                    className={`grid grid-cols-10 grid-rows-1 w-full  h-full rounded-[5px] hover:bg-blue-100 px-2 ${
+                                        index !== 4 ? `border-b-[1px]` : ""
+                                    } border-gray-200`}
+                                >
+                                    <div className="flex justify-center items-center col-span-2">
+                                        <p className="text-lg font-bold text-black opacity-50 py-2">
+                                            {item.title}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <img
+                                            src={item.image}
+                                            alt=""
+                                            className="w-[75px] h-[75px] object-cover rounded-[10px] border border-gray-200"
+                                        />
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {FormatCurrency(Number(item.price))}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex justify-start items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.category}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-start items-center col-span-2">
+                                        <p className="text-sm text-gray-500">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-center items-center col-span-1">
+                                        <p className="text-sm text-gray-500">
+                                            {item.availability === 1 ? (
+                                                <span className="text-green-500 text-[15px] bg-green-200 p-2 rounded-md">
+                                                    Available
+                                                </span>
+                                            ) : (
+                                                <span className="text-red-500 text-[15px] bg-red-200 p-2 rounded-md">
+                                                    Out of service
+                                                </span>
+                                            )}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex justify-center items-center gap-3 col-span-2">
+                                        <div className="flex flex-row justify-between items-center text-[12px] gap-2">
+                                            <button
+                                                onClick={() =>
+                                                    handleOpenFormIngre(
+                                                        item.item_id
+                                                    )
+                                                }
+                                                className="text-white text-[15px] bg-green-400 p-2 rounded-[30px] hover:bg-green-200 flex flex-row items-center"
+                                            >
+                                                <FiBox className="text-[20px]" />
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleOpenFormNutri(
+                                                        item.item_id
+                                                    )
+                                                }
+                                                className="text-yellow-100 text-[15px] bg-yellow-400 p-2 rounded-[30px] hover:bg-yellow-200 flex flex-row items-center"
+                                            >
+                                                <FiLink className="text-[20px]" />
+                                            </button>
+
+                                            <LiaEdit
+                                                onClick={() =>
+                                                    setIsEdit(
+                                                        true,
+                                                        item.item_id
+                                                    )
+                                                }
+                                                className="text-[30px] text-blue-300 hover:text-blue-500"
+                                            />
+                                            <MdOutlineDelete
+                                                onClick={() =>
+                                                    handleDelete(item.item_id)
+                                                }
+                                                className=" text-[30px] text-red-300 hover:text-red-500"
                                             />
                                         </div>
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {FormatCurrency(
-                                                    Number(item.price)
-                                                )}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex justify-start items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.category}
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-start items-center col-span-2">
-                                            <p className="text-sm text-gray-500">
-                                                {item.description}
-                                            </p>
-                                        </div>
-                                        <div className="flex justify-center items-center col-span-1">
-                                            <p className="text-sm text-gray-500">
-                                                {item.availability === 1 ? (
-                                                    <span className="text-green-500 text-[15px] bg-green-200 p-2 rounded-md">
-                                                        Available
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-red-500 text-[15px] bg-red-200 p-2 rounded-md">
-                                                        Out of service
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex justify-center items-center gap-3 col-span-2">
-                                            <div className="flex flex-row justify-between items-center text-[12px] gap-2">
-                                                <button
-                                                    onClick={() =>
-                                                        handleOpenFormIngre(
-                                                            item.item_id
-                                                        )
-                                                    }
-                                                    className="text-white text-[15px] bg-green-400 p-2 rounded-[30px] hover:bg-green-200 flex flex-row items-center"
-                                                >
-                                                    <FiBox className="text-[20px]" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleOpenFormNutri(
-                                                            item.item_id
-                                                        )
-                                                    }
-                                                    className="text-yellow-100 text-[15px] bg-yellow-400 p-2 rounded-[30px] hover:bg-yellow-200 flex flex-row items-center"
-                                                >
-                                                    <FiLink className="text-[20px]" />
-                                                </button>
-
-                                                <LiaEdit
-                                                    onClick={() =>
-                                                        setIsEdit(
-                                                            true,
-                                                            item.item_id
-                                                        )
-                                                    }
-                                                    className="text-[30px] text-blue-300 hover:text-blue-500"
-                                                />
-                                                <MdOutlineDelete
-                                                    onClick={() =>
-                                                        handleDelete(
-                                                            item.item_id
-                                                        )
-                                                    }
-                                                    className=" text-[30px] text-red-300 hover:text-red-500"
-                                                />
-                                            </div>
-                                            {/* <FaEye
+                                        {/* <FaEye
                                                 onClick={() =>
                                                     handleOpenForm(item.user_id)
                                                 }
@@ -282,9 +277,8 @@ const ListItems: React.FC<ListItemsProps> = ({ setIsEdit, isRender }) => {
                                                 }
                                                 className="text-[30px] text-red-500 hover:text-red-200"
                                             /> */}
-                                        </div>
                                     </div>
-                                </>
+                                </div>
                             );
                         }
                     )}

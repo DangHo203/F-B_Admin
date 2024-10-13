@@ -2,13 +2,15 @@ import { memo, useEffect, useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { updateStaffAPI, getStaffByIdAPI } from "../staff.service";
 import Swal from "sweetalert2";
+import PermissionDescriptor from "./ManagePermission";
 
 interface FormUpdateProps {
-    _id: string;
+    permissions: string[];
+    _id: number;
     handleOpenFormUpdate: (item: any) => void;
 }
 
-const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
+const FormUpdate = ({ _id, handleOpenFormUpdate ,permissions}: FormUpdateProps) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -60,8 +62,8 @@ const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
     };
 
     return (
-        <div className="fixed inset-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center z-40">
-            <div className="!opacity-100 flex flex-col justify-start items-start w-auto h-auto bg-white p-5 rounded-lg z-50 gap-[20px]">
+        <div className="fixed inset-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center z-40 px-[50px] gap-5">
+            <div onClick={(e)=>e.stopPropagation()} className="!opacity-100 flex flex-col justify-start items-start w-1/3 h-2/3 bg-white p-5 rounded-lg z-50 gap-[20px]">
                 <span className="text-[20px] font-bold self-center">Edit</span>
 
                 <input
@@ -107,6 +109,7 @@ const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
                             <MenuItem value={"admin"}>Admin</MenuItem>
                             <MenuItem value={"chef"}>Chef</MenuItem>
                             <MenuItem value={"cashier"}>Cashier</MenuItem>
+                            <MenuItem value={"shipper"}>Shipper</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -146,6 +149,9 @@ const FormUpdate = ({ _id, handleOpenFormUpdate }: FormUpdateProps) => {
                     </button>
                 </div>
             </div>
+
+            <PermissionDescriptor permissionsList={permissions} _id={_id}/>
+
         </div>
     );
 };

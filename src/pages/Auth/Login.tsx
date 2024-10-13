@@ -33,6 +33,7 @@ export default function Login() {
                     token: rs?.data?.data.token,
                     id: rs?.data?.data.user.user_id,
                     role: rs?.data?.data.role,
+                    permissions: rs?.data?.data.user.permissions,
                 })
             );
 

@@ -24,7 +24,7 @@ const MainPanel: React.FC<MainPanelProps> = ({}) => {
     };
 
     return (
-        <div className="w-full h-full rounded-[20px] bg-gray-700 grid grid-cols-5 grid-rows-2 gap-5 p-5">
+        <div className="w-full h-full rounded-[20px] bg-sidebar grid grid-cols-5 grid-rows-2 gap-5 p-5">
             {data?.length ? (
                 data?.map((order: any) => {
                     return (
@@ -37,7 +37,7 @@ const MainPanel: React.FC<MainPanelProps> = ({}) => {
                     );
                 })
             ) : (
-                <div className="w-full h-full flex justify-center items-center text-red-500 col-span-5 row-span-2">There are no recipe...</div>
+                <div className="w-full h-full flex justify-center items-center text-red-500 col-span-5 row-span-2 text-[30px]">There are no recipe...</div>
             )}
         </div>
     );

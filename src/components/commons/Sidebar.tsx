@@ -3,10 +3,11 @@ import path from "../../utils/path";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slice/user.slice";
 
 import { sideBarItems } from "../../constant/common.constant";
+
 import Swal from "sweetalert2";
 export default function SideBar() {
     const navigate = useNavigate();
@@ -15,7 +16,11 @@ export default function SideBar() {
         const saved = sessionStorage.getItem("active");
         return saved ? parseInt(saved, 10) : 1;
     });
-
+    const {permissions} = useSelector((state: any) => state.userSlice);
+    const filteredSideBarItems = sideBarItems?.filter((item) =>
+        permissions.includes(item?.permission)
+    );
+    
     useEffect(() => {
         sessionStorage.setItem("active", active.toString());
         const id = parseInt(sessionStorage.getItem("active") || "1", 10);
@@ -39,7 +44,7 @@ export default function SideBar() {
                 sessionStorage.clear();
                 dispatch(logout());
                 navigate(path.login);
-            }else{
+            } else {
                 return;
             }
         });
@@ -52,10 +57,10 @@ export default function SideBar() {
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/7bf21ebf32d3638e22d34e08f9fc57515850acf1bdd8864f7413f0799d865e8a?placeholderIfAbsent=true&apiKey=e0522cabc7bc4885906fcb2658eca109"
                     alt=""
                 />
-            </div> 
+            </div>
 
             <div className="w-full h-[70%] flex justify-start items-start gap-1 flex-col px-[30px]">
-                {sideBarItems.map((item) => (
+                {filteredSideBarItems?.map((item) => (
                     <div
                         key={item.id}
                         onClick={() => handleSetActive(item.id)}
@@ -69,6 +74,7 @@ export default function SideBar() {
                         <span> {item.name}</span>
                     </div>
                 ))}
+                
             </div>
 
             <div className="w-full h-[10%] flex justify-center items-center">

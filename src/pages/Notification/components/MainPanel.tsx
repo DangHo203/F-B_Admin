@@ -25,8 +25,9 @@ const MainPanel: React.FC<MainPanelProps> = ({}) => {
             } else if (filter === "latest") {
                 return new Date(a.time).getTime() - new Date(b.time).getTime(); // Latest first
             }
-            return 0; 
-        });
+            return 0;
+        })
+        .reverse();
 
     return (
         <div className="w-full h-full rounded-[20px] bg-white flex flex-col gap-5 p-5">

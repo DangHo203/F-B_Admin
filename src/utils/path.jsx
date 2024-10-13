@@ -12,5 +12,6 @@ const path = {
     history: "/history_order",
     notification: "/notification",
     shipper: "/shipper",
+    schedule: "/schedule",
 };
 export default path;

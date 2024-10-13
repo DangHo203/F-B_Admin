@@ -123,7 +123,7 @@ export default function ListStaff() {
                             index: number
                         ) => {
                             return (
-                                <>
+                             
                                     <div
                                         onClick={() =>
                                             handleOpenForm(item.user_id)
@@ -194,7 +194,7 @@ export default function ListStaff() {
                                             />
                                         </div>
                                     </div>
-                                </>
+                            
                             );
                         }
                     )}

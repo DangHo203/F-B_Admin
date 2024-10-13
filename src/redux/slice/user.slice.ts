@@ -7,6 +7,7 @@ export const UserSlice = createSlice({
         isLogin: false,
         id: "",
         role: "",
+        permissions: []
     },
     reducers: {
         login: (state, action) => {
@@ -15,11 +16,13 @@ export const UserSlice = createSlice({
             state.isLogin = true;
             state.id = action.payload.id;
             state.role = action.payload.role;
+            state.permissions = action.payload.permissions;
         },
         logout: (state) => {
             state.id = "";
             state.token = "";
             state.role = "";
+            state.permissions = [];
             state.isLogin = false;
         },
     },

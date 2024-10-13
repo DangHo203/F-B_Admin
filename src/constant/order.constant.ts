@@ -58,6 +58,7 @@ const statusList = {
     Delivered: "text-delivered opacity-50",
     Cancelled: "text-cancelled opacity-50",
     Packed: "text-packed opacity-50",
+    Successfully: "text-delivered opacity-50",
 };
 const statusBackground = {
     Pending: "bg-pending",
@@ -66,6 +67,7 @@ const statusBackground = {
     Delivered: "bg-delivered",
     Cancelled: "bg-cancelled",
     Packed: "bg-packed",
+    Successfully: "bg-delivered",
 };
 export const statusMap1 = new Map(Object.entries(statusList));
 export const statusMap2 = new Map(Object.entries(statusBackground));
@@ -94,5 +96,9 @@ export const stepperList = [
     {
         label: "Delivered",
         id: 5,
+    },
+    {
+        label: "Successfully",
+        id: 6,
     },
 ];

@@ -26,6 +26,7 @@ import TextColumn from "./TextColumn";
 import { cancelOrderAPI, changeStatusOrderAPI } from "../order.service";
 import { GetTime } from "../../../helper/GetTimeOnDate.helper";
 import Driver from "./ListDriver";
+import SocketSingleton from "../../../socket";
 
 interface ListOrdersProps {
     isRender: boolean;
@@ -35,11 +36,14 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
     const [isOpenFormDetail, setIsOpenFormDetail] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<number>(0);
     const [selectedCustomer, setSelectedCustomer] = useState<number>(0);
+    const [selectedStatus, setSelectedStatus] = useState<string>("");
+
     const [isOpenShowSelectDriver, setIsOpenShowSelectDriver] = useState(false);
 
     const [list, setList] = useState<IOrder[]>([]);
     const navigate = useNavigate();
     const [params] = useSearchParams();
+    const socket = SocketSingleton.getInstance();
 
     const nextStage = async (status: string) => {
         if (status === "Pending") {
@@ -53,12 +57,17 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
         }
     };
 
-    const handleSelectDriver = async (order_id: number) => {};
-
-    const handleChangeStatus = async (status: string, id: number) => {
+    const handleChangeStatus = async (
+        status: string,
+        shipper_id?: number,
+        order_id?: number,
+    ) => {
+        console.log(status);
         Swal.fire({
             title: "Are you sure?",
-            text: "Do you want to confirm this order?",
+            text: shipper_id
+                ? "Confirm to choose this driver?"
+                : "Do you want to confirm this order?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes",
@@ -67,13 +76,16 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
             if (result.isConfirmed) {
                 try {
                     const stage = await nextStage(status);
-
+                    console.log(stage);
                     const rs = await changeStatusOrderAPI({
-                        order_id: id,
+                        user_id: shipper_id,
+                        order_id: order_id || selectedOrder,
                         status: stage,
                     });
                     if (rs?.status === 200) {
+                        socket.emit("orderArrive", shipper_id);
                         toast.success("Change status success");
+                        setIsOpenShowSelectDriver(false);
                         fetchData();
                     }
                 } catch (error) {
@@ -136,6 +148,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
     };
 
     useEffect(() => {
+        
         fetchData();
     }, [params, isRender, isOpenFormDetail]);
 
@@ -146,10 +159,20 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
             navigate(`?${params.toString()}`);
         }
     }, [list]);
+
+    useEffect(() => {
+        socket.on("orderDelivered", () => {
+            fetchData();
+        });
+        return () => {
+            socket.off("orderDelivered");
+        };
+    },[])
     return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
             {isOpenFormDetail && (
                 <OrderDetail
+                    status={selectedStatus}
                     orderID={selectedOrder}
                     userID={selectedCustomer}
                     setIsShowDetail={setIsOpenFormDetail}
@@ -158,7 +181,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
             {isOpenShowSelectDriver && (
                 <Driver
                     setIsOpenShowSelectDriver={setIsOpenShowSelectDriver}
-                    handleSelectDriver={handleSelectDriver}
+                    handleSelectDriver={handleChangeStatus}
                 />
             )}
 
@@ -186,9 +209,10 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                 <div className="w-full h-full grid grid-cols-1 grid-rows-10  bg-white rounded-[30px] items-center justify-center p-[30px] ">
                     {list?.map((item: IOrder, index: number) => {
                         return (
-                            <>
+                        
                                 <div
                                     onClick={() => {
+                                        setSelectedStatus(item.status);
                                         setSelectedOrder(item.order_id);
                                         setSelectedCustomer(item.user_id);
                                         setIsOpenFormDetail(true);
@@ -263,6 +287,9 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                                             <div
                                                 onClick={(event) => {
                                                     event.stopPropagation();
+                                                    setSelectedOrder(
+                                                        item.order_id
+                                                    );
                                                     handleChangeStatus(
                                                         item.status,
                                                         item.order_id
@@ -284,6 +311,9 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                                             <div
                                                 onClick={(event) => {
                                                     event.stopPropagation();
+                                                    setSelectedOrder(
+                                                        item.order_id
+                                                    );
                                                     setIsOpenShowSelectDriver(
                                                         true
                                                     );
@@ -301,10 +331,12 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                                             </div>
                                         )}
                                         {item.status !== "Cancelled" &&
-                                            item.status !== "Delivered" && (
+                                            item.status !== "Delivered" &&
+                                            item.status !== "Successfully" && (
                                                 <div
                                                     onClick={(event) => {
                                                         event.stopPropagation();
+
                                                         handleCancelOrder(
                                                             item.order_id
                                                         );
@@ -323,7 +355,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                                             )}
                                     </div>
                                 </div>
-                            </>
+                    
                         );
                     })}
                 </div>

@@ -14,6 +14,7 @@ import Radio from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
 
 import { useNavigate } from "react-router-dom";
+import { permissionRole } from "../../helper/SelectPermission";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -68,6 +69,7 @@ export default function Register() {
                 ...values,
                 phone: values.phone,
                 role,
+                permissions: permissionRole(role),
             };
             if ((values.password !== values.confirmPassword) == true) {
                 Swal.fire({
@@ -79,6 +81,7 @@ export default function Register() {
                     return;
                 });
             } else {
+                console.log(data);
                 const rs: AxiosResponse<any> = await registerAPI(data);
 
                 if (rs.status === 200) {

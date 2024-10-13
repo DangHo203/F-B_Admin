@@ -201,7 +201,7 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                     )}
                     {listIngredients?.map((item, index) => {
                         return (
-                            <>
+                       
                                 <div
                                     key={index}
                                     className="grid grid-cols-3 grid-rows-1 gap-2 my-2"
@@ -257,7 +257,7 @@ const FormIngredients: React.FC<FormIngretionProps> = ({
                                         />
                                     </div>
                                 </div>
-                            </>
+                       
                         );
                     })}
                 </div>

@@ -16,10 +16,6 @@ export const title = [
         colSpan: "col-span-1",
     },
     {
-        title: "Point",
-        colSpan: "col-span-1",
-    },
-    {
         title: "Action",
         colSpan: "col-span-1",
     },

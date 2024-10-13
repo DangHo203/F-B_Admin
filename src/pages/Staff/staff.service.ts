@@ -27,7 +27,7 @@ export const getStaffByParamsAPI = async (data: any) => {
 export const getAllStaffAPI = async () => {
     return await axios({
         method: "GET",
-        url: "/staff/getStaff",
+        url: "/staff/getAllStaff",
     });
 };
 
@@ -46,3 +46,12 @@ export const updateStaffAPI = async (data: any) => {
         params: data,
     });
 };
+
+
+export const updatePermissionAPI = async (data: any) => {
+    return await axios({
+        method: "PUT",
+        url: "/staff/updatePermission",
+        params: data,
+    });
+}
