@@ -81,7 +81,7 @@ export default function Register() {
                     return;
                 });
             } else {
-                console.log(data);
+             
                 const rs: AxiosResponse<any> = await registerAPI(data);
 
                 if (rs.status === 200) {

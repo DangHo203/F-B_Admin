@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import FormEdit from "./FormEdit";
 import { set } from "date-fns";
+import SocketSingleton from "../../../socket";
 const title = [
     {
         title: "ID",
@@ -45,6 +46,7 @@ interface ListIngredientsProps {
     isRender: boolean;
 }
 const ListIngredients: React.FC<ListIngredientsProps> = ({ isRender }) => {
+    const socket = SocketSingleton.getInstance();
     const [isEdit, setIsEdit] = useState(false);
     const [id, setId] = useState("");
     const [list, setList] = useState<any[]>([]);
@@ -97,6 +99,18 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({ isRender }) => {
             params.delete("page");
             params.append("page", "1");
             navigate(`?${params.toString()}`);
+        }
+
+        if (list?.length > 0) {
+            list?.map((item) => {
+                if (item.stock < 10) {
+                    socket.emit("Ingredient-Update", {
+                        id: item.ingredient_id,
+                        is_available: true,
+                    });
+                }
+
+            });
         }
     }, [list]);
     return (

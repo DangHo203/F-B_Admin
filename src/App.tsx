@@ -21,7 +21,7 @@ const Notification = lazy(() => import("./pages/Notification/Notification"));
 const Shipper = lazy(() => import("./pages/Shipper/Shipper"));
 const Schedule = lazy(() => import("./pages/ShiftSchedule/Schedule"));
 
-// const MapTest = lazy(() => import("./pages/test/Map/Map"));
+const MapTest = lazy(() => import("./components/Map/Map"));
 
 function App() {
     const { isLogin, role, permissions } = useSelector(
@@ -43,7 +43,6 @@ function App() {
             const checkPermission = permissionPath.find(
                 (item) => item.path === pathname
             );
-            console.log(checkPermission);
             if (
                 checkPermission &&
                 !permissions.includes(checkPermission.permission)
@@ -65,7 +64,7 @@ function App() {
                         <>
                             <Route
                                 path="/test"
-                                // element={<MapTest />}
+                                element={<MapTest start={[106.78,10.79 ]} end={[106.90,10.90 ]} />}
                             />
                             <Route path="/shipper" element={<Shipper />} />
                             <Route path="/" element={<DashBoard />} />

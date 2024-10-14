@@ -75,7 +75,6 @@ export default function ShiftSchedulerCalendar(): JSX.Element {
         setEndTime('');
         setError(null);
     };
-    console.log(shifts);
 
     return (
         <div className="shift-scheduler">

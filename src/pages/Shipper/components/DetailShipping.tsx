@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { getOrderByIdAPI } from "../../Order/order.service";
 import {
     fetchCustomerById,
     fetchOrder,
     fetchOrderItems,
 } from "../../../utils/Order/order.utils";
-import { set } from "date-fns";
 import { GetTime } from "../../../helper/GetTimeOnDate.helper";
 import FormatCurrency from "../../../helper/FormatCurrency.helper";
-import MapTilerComponent from "../../test/Map/Map";
+// import MapTilerComponent from "../../test/Map/Map";
+import { io, Socket } from "socket.io-client";
+import Map from "../../../components/Map/Map";
+import { useSelector } from "react-redux";
+import TextFieldComponent from "../../../components/commons/TextField";
 
 interface DetailShippingProps {
     order_id: number;
@@ -20,11 +22,18 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
     setIsOpenDetail,
     handleComplete,
 }) => {
+    const { id } = useSelector((state: any) => state.userSlice);
+    const socket: Socket = io("http://localhost:5001");
     const [order, setOrder] = useState<any>(null);
     const [customer, setCustomer] = useState<any>(null);
     const [detailOrder, setDetailOrder] = useState<any>(null);
+  
 
     const [isStart, setIsStart] = useState(false);
+
+    const [start, setStart] = useState<[number,number]>([0,0]);
+    const [end, setEnd] = useState<[number,number]>([0,0]);
+
 
     const handleDelivery = async () => {
         if (isStart) {
@@ -37,6 +46,19 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
             setIsStart(true);
         }
     };
+
+    useEffect(() => {
+        socket.on("Shipper-Position-Get", (data) => {
+            if (data?.id === id) {
+                setStart([data?.shipperLocation?.lng, data?.shipperLocation?.lat]);
+            }
+        })
+
+        return () => {
+            socket.off("Shipper-Position-Get");
+        }
+
+    }, [socket]);
 
     const fetchOrderData = async () => {
         const rs = await fetchOrder(order_id);
@@ -71,27 +93,14 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
             >
                 <div className="p-5"></div>
                 <h2 className="text-2xl font-bold mb-4">Order Details</h2>
-                <div className="mb-2">
-                    <span className="font-semibold">Order ID:</span> {order_id}
-                </div>
-                <div className="mb-2">
-                    <span className="font-semibold">Customer Name:</span>{" "}
-                    {customer?.fullName}
-                </div>
-                <div className="mb-2">
-                    <span className="font-semibold">Shipping Address:</span>{" "}
-                    {order?.address}
-                </div>
-                <div className="mb-2">
-                    <span className="font-semibold">Phone number: </span>
-                    {customer?.phone}
-                </div>
-                <div className="mb-2">
-                    <span className="font-semibold">Order time: </span>
-                    {GetTime(order?.delivery_time)}
-                </div>
 
-                <table className="w-full border px-2">
+                <TextFieldComponent label="Order ID:" value={order_id.toString()} />
+                <TextFieldComponent label="Customer Name:" value={customer?.fullName} />
+                <TextFieldComponent label="Shipping Address:" value={order?.address} />
+                <TextFieldComponent label="Phone number:" value={customer?.phone} />
+                <TextFieldComponent label="Order time:" value={GetTime(order?.delivery_time)} />
+
+                <table className="w-full border px-2 mt-3">
                     <thead>
                         <tr>
                             <th className="text-start">Product Name</th>
@@ -120,7 +129,7 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
                 <div className="mt-4 gap-2 flex flex-col">
                     {isStart ? (
                         <>
-                            <MapTilerComponent />
+                            <Map start={start} end={[106.734675,10.806281]}/>
                             <button
                                 onClick={handleDelivery}
                                 className="px-4 py-2 w-full bg-green-500 text-white rounded hover:bg-green-700"

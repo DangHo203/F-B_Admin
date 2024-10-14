@@ -32,7 +32,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
                     status: stage,
                     order_id,
                 });
-                console.log(rs);
+         
                 if (rs?.status === 200) {
                     Swal.fire(
                         "Completed!",

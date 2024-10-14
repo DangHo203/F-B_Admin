@@ -18,7 +18,6 @@ const FormAdd: React.FC<FormAddProps> = ({
         queryKey: ["fetchStaff"],
         queryFn: getAllStaff,
     });
-    console.log(data);
 
     const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
     const [date, setDate] = useState<string>("");
@@ -51,7 +50,6 @@ const FormAdd: React.FC<FormAddProps> = ({
             title: `${staff.fullName} shift`,
         };
         const rs = await addShift(newShift);
-        console.log(rs);
         setShifts([...shifts, newShift]);
         clearForm();
         setOpenForm(false);

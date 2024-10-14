@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const UserSlice = createSlice({
     name: "user",
     initialState: {
+        fullName: "",
         token: "",
         isLogin: false,
         id: "",
@@ -17,6 +18,7 @@ export const UserSlice = createSlice({
             state.id = action.payload.id;
             state.role = action.payload.role;
             state.permissions = action.payload.permissions;
+            state.fullName = action.payload.fullName;
         },
         logout: (state) => {
             state.id = "";
@@ -24,6 +26,7 @@ export const UserSlice = createSlice({
             state.role = "";
             state.permissions = [];
             state.isLogin = false;
+            state.fullName = "";
         },
     },
 });

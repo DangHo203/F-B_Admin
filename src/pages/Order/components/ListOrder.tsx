@@ -62,7 +62,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
         shipper_id?: number,
         order_id?: number,
     ) => {
-        console.log(status);
+       
         Swal.fire({
             title: "Are you sure?",
             text: shipper_id
@@ -76,7 +76,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
             if (result.isConfirmed) {
                 try {
                     const stage = await nextStage(status);
-                    console.log(stage);
+                  
                     const rs = await changeStatusOrderAPI({
                         user_id: shipper_id,
                         order_id: order_id || selectedOrder,

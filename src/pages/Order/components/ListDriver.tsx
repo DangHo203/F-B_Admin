@@ -31,7 +31,7 @@ const Driver: React.FC<DriverProps> = ({
 
     useEffect(() => {
         const fetchAllDrivers = async () => {
-            if (drivers?.length > 0) {
+            if (drivers?.length >= 0) {
                 const driverInfoArray = await Promise.all(
                     drivers.map(fetchDriver)
                 );
@@ -42,7 +42,7 @@ const Driver: React.FC<DriverProps> = ({
         fetchAllDrivers();
     }, [drivers]);
 
-    console.log(listDriverInfo);
+
 
     return (
         <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-50 flex justify-center items-center">

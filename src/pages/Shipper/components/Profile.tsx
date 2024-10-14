@@ -9,7 +9,6 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({ id }) => {
     const fetchUser = async () => {
         const rs = await getStaffByIdAPI(id);
-        console.log(rs);
         return rs?.data.data[0];
     };
     const { data, isLoading, isError } = useQuery({

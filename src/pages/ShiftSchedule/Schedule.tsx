@@ -46,7 +46,7 @@ export default function Schedule() {
     }, []);
 
     const handleDeleteShift = async (shiftId: number) => {
-        console.log(shiftId);   
+       
         const response = await deleteShiftAPI(shiftId);
         if (response.status === 200) {
             fetchShifts();

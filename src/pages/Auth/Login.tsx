@@ -24,7 +24,7 @@ export default function Login() {
             username.trim(),
             password.trim()
         );
-        console.log(rs);
+    
         const { status } = rs;
 
         if (rs?.status === 200) {
@@ -34,6 +34,7 @@ export default function Login() {
                     id: rs?.data?.data.user.user_id,
                     role: rs?.data?.data.role,
                     permissions: rs?.data?.data.user.permissions,
+                    fullName: rs?.data?.data.user.fullName,
                 })
             );
 
