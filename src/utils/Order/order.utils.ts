@@ -3,6 +3,7 @@ import {
     getSumOrdersAPI,
     getOrderByIdAPI,
     getOrderItemsAPI,
+    getOrdersByIdOrderAPI,
 } from "../../pages/Order/order.service";
 
 import { getCustomerByIdAPI } from "../../pages/Customer/customer.service";
@@ -18,7 +19,6 @@ export const getHistoryOrders = async (data: any): Promise<IOrder[]> => {
     return rs?.data?.result;
 };
 export const getOrdersByParams = async (data: any): Promise<IOrder[]> => {
- 
     const rs = await getOdersByParamsAPI(data);
     return rs?.data?.result;
 };
@@ -28,7 +28,7 @@ export const getSumHistoryOrders = async (data: any): Promise<any> => {
         history: 1,
     });
     return rs?.data?.result[0].Sum;
-}
+};
 export const getSumOrders = async (data: any): Promise<any> => {
     const rs = await getSumOrdersAPI(data);
 
@@ -36,8 +36,8 @@ export const getSumOrders = async (data: any): Promise<any> => {
 };
 
 export const fetchOrder = async (orderID: number) => {
-    const rs = await getOrderByIdAPI(orderID);
-
+    const rs = await getOrdersByIdOrderAPI(orderID);
+    console.log(rs);
     return rs?.data?.result[0];
 };
 

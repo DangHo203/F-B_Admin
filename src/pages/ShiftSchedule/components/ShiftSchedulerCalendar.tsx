@@ -22,7 +22,7 @@ const ShiftSchedulerCalendar: React.FC<EventProps> = ({
     };
   
     return (
-        <div className="shift-scheduler">
+        <div className="shift-scheduler p-5">
             <div className="flex flex-row justify-between items-center">
                 <h1>Schedule Staff Shifts</h1>
                 <div className="text-[40px] text-red-500 hover:text-red-300">

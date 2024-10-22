@@ -25,19 +25,26 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
     fatProps,
     carbohydrateProps,
     data,
-    isEdit
+    isEdit,
 }) => {
     const [calories, setCalories] = useState(caloriesProps || "");
     const [protein, setProtein] = useState(proteinProps || "");
     const [fat, setFat] = useState(fatProps || "");
     const [carbohydrate, setCarbohydrate] = useState(carbohydrateProps || "");
-    const [nutritional_info_id, setNutritional_info_id] = useState(data?.nutritional_info_id || 0);
+    const [nutritional_info_id, setNutritional_info_id] = useState(
+        data?.nutritional_info_id || 0
+    );
 
-    
-    const handleSave =async () => {
+    const handleSave = async () => {
         if (isEdit) {
-            //edit data         
-            const res= await updateNutritionAPI({ nutritional_info_id:nutritional_info_id,calories,proteins:protein,fats:fat,carbs:carbohydrate});
+            //edit data
+            const res = await updateNutritionAPI({
+                nutritional_info_id: nutritional_info_id,
+                calories,
+                proteins: protein,
+                fats: fat,
+                carbs: carbohydrate,
+            });
             if (res.status === 200) {
                 toast("Edit success");
             } else {
@@ -48,17 +55,15 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
         }
         if (handleSaveNutritionData) {
             handleSaveNutritionData({
-                nutritional_info_id:data.nutritional_info_id,
+                nutritional_info_id: data.nutritional_info_id,
                 calories,
-                proteins:protein,
-                fats:fat,
-                carbs:carbohydrate,
+                proteins: protein,
+                fats: fat,
+                carbs: carbohydrate,
             });
         }
         setIsOpenFormNutri(false);
     };
-
-
 
     useEffect(() => {
         if (data) {
@@ -76,7 +81,7 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
                 setFat(res?.fats.toString());
                 setCarbohydrate(res?.carbs.toString());
             });
-            
+            console.log(rs);
         }
     }, []);
     return (
@@ -89,7 +94,9 @@ const FormNutrition: React.FC<FormNutritionProps> = ({
                     X
                 </div>
 
-                <span className="text-[25px] font-bold text-center">Nutrition</span>
+                <span className="text-[25px] font-bold text-center">
+                    Nutrition
+                </span>
                 <Input
                     value={calories}
                     onChange={setCalories}

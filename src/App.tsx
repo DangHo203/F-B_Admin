@@ -1,11 +1,12 @@
 import React, { lazy, useEffect, startTransition, Suspense } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import ShiftScheduler from "./pages/test/shift";
-import ShiftSchedulerCalendar from "./pages/test/calendar";
 import { permissionPath } from "./constant/permission.constant";
+import SocketSingleton from "./socket";
+import { sendNotificationAction } from "./redux/api/notification";
+import Swal from "sweetalert2";
 const DashBoard = lazy(() => import("./pages/Dashboard/Dashboard"));
 const Login = lazy(() => import("./pages/Auth/Login"));
 const Register = lazy(() => import("./pages/Auth/Register"));
@@ -28,6 +29,8 @@ function App() {
         (state: any) => state.userSlice
     );
     const pathname = window.location.pathname;
+    const socket = SocketSingleton.getInstance();
+    const dispatch: any = useDispatch();
 
     const navigate = useNavigate();
     useEffect(() => {
@@ -53,6 +56,44 @@ function App() {
         });
     }, [isLogin, navigate]);
 
+    useEffect(() => {
+        socket.on("orderCancelNotification", (orderId: string) => {
+            console.log("orderCancelNotification", orderId);
+
+            dispatch(
+                sendNotificationAction({
+                    title: "Order has been cancelled" as string,
+                    content: `Order ${orderId} has been cancelled` as string,
+                    link: `/order/${orderId}` as string,
+                    type: "failed" as string,
+                })
+            );
+            Swal.fire({
+                title: `Order #${orderId} has been cancelled`,
+                showClass: {
+                    popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                  `,
+                },
+                hideClass: {
+                    popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                  `,
+                },
+                position: "top",
+                timer: 2000,
+            });
+        });
+
+        return () => {
+            socket.off("orderCancelNotification");
+        };
+    }, []);
+
     return (
         <div className="App">
             <Suspense fallback={<div>Loading...</div>}>
@@ -64,7 +105,12 @@ function App() {
                         <>
                             <Route
                                 path="/test"
-                                element={<MapTest start={[106.78,10.79 ]} end={[106.90,10.90 ]} />}
+                                element={
+                                    <MapTest
+                                        start={[106.78, 10.79]}
+                                        end={[106.9, 10.9]}
+                                    />
+                                }
                             />
                             <Route path="/shipper" element={<Shipper />} />
                             <Route path="/" element={<DashBoard />} />

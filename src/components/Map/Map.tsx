@@ -93,8 +93,8 @@ const MapboxComponent: React.FC<MapboxComponentProps> = ({ start, end }) => {
                                 "line-cap": "round",
                             },
                             paint: {
-                                "line-color": "#888",
-                                "line-width": 8,
+                                "line-color": "#0F53FF",
+                                "line-width": 5,
                             },
                         });
                     } catch (error) {

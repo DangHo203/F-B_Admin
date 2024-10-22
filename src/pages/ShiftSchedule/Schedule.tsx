@@ -75,7 +75,7 @@ export default function Schedule() {
             >
                 <span className="text-white">Add new schedule</span>
             </div>
-            <div className="w-full h-full bg-main-bg col-span-5 row-span-12 flex items-center justify-center">
+            <div className="w-full h-full bg-main-bg col-span-5 row-span-12 flex items-center justify-center p-5">
                 <ShiftSchedulerCalendar handleDeleteShift={handleDeleteShift} shifts={list} />
             </div>
         </div>

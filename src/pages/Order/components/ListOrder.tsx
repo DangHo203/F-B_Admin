@@ -27,6 +27,7 @@ import { cancelOrderAPI, changeStatusOrderAPI } from "../order.service";
 import { GetTime } from "../../../helper/GetTimeOnDate.helper";
 import Driver from "./ListDriver";
 import SocketSingleton from "../../../socket";
+import { now } from "moment";
 
 interface ListOrdersProps {
     isRender: boolean;
@@ -60,9 +61,8 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
     const handleChangeStatus = async (
         status: string,
         shipper_id?: number,
-        order_id?: number,
+        order_id?: number
     ) => {
-       
         Swal.fire({
             title: "Are you sure?",
             text: shipper_id
@@ -76,7 +76,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
             if (result.isConfirmed) {
                 try {
                     const stage = await nextStage(status);
-                  
+
                     const rs = await changeStatusOrderAPI({
                         user_id: shipper_id,
                         order_id: order_id || selectedOrder,
@@ -148,7 +148,6 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
     };
 
     useEffect(() => {
-        
         fetchData();
     }, [params, isRender, isOpenFormDetail]);
 
@@ -164,10 +163,14 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
         socket.on("orderDelivered", () => {
             fetchData();
         });
+
+        socket.on("orderCommingNotification", () => {
+            fetchData();
+        });
         return () => {
             socket.off("orderDelivered");
         };
-    },[])
+    }, []);
     return (
         <div className="w-full h-[80%] flex flex-col justify-center items-center px-5">
             {isOpenFormDetail && (
@@ -209,153 +212,150 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
                 <div className="w-full h-full grid grid-cols-1 grid-rows-10  bg-white rounded-[30px] items-center justify-center p-[30px] ">
                     {list?.map((item: IOrder, index: number) => {
                         return (
-                        
-                                <div
-                                    onClick={() => {
-                                        setSelectedStatus(item.status);
-                                        setSelectedOrder(item.order_id);
-                                        setSelectedCustomer(item.user_id);
-                                        setIsOpenFormDetail(true);
-                                    }}
-                                    key={index}
-                                    className={` grid grid-cols-12 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${
-                                        index !== 4 ? `border-b-[1px]` : ""
-                                    } border-gray-200`}
-                                >
-                                    <TextColumn
-                                        text={item.order_id.toString()}
-                                        classNameValue={
-                                            "justify-center items-center col-span-1"
-                                        }
-                                    />
+                            <div
+                                onClick={() => {
+                                    setSelectedStatus(item.status);
+                                    setSelectedOrder(item.order_id);
+                                    setSelectedCustomer(item.user_id);
+                                    setIsOpenFormDetail(true);
+                                }}
+                                key={index}
+                                className={` grid grid-cols-12 grid-rows-1 w-full h-full rounded-[5px] hover:bg-blue-100 ${
+                                    index !== 4 ? `border-b-[1px]` : ""
+                                } border-gray-200`}
+                            >
+                                <TextColumn
+                                    text={item.order_id.toString()}
+                                    classNameValue={
+                                        "justify-center items-center col-span-1"
+                                    }
+                                />
 
-                                    <TextColumn
-                                        text={item.user_id.toString()}
-                                        classNameValue={
-                                            "justify-start items-center col-span-1"
-                                        }
-                                    />
-                                    <TextColumn
-                                        text={FormatCurrency(item.total_price)}
-                                        classNameValue={
-                                            "justify-start items-center col-span-1"
-                                        }
-                                    />
-                                    <TextColumn
-                                        text={item.message as string}
-                                        classNameValue={
-                                            "justify-start items-center col-span-3"
-                                        }
-                                    />
+                                <TextColumn
+                                    text={item.user_id.toString()}
+                                    classNameValue={
+                                        "justify-start items-center col-span-1"
+                                    }
+                                />
+                                <TextColumn
+                                    text={FormatCurrency(item.total_price)}
+                                    classNameValue={
+                                        "justify-start items-center col-span-1"
+                                    }
+                                />
+                                <TextColumn
+                                    text={item.message as string}
+                                    classNameValue={
+                                        "justify-start items-center col-span-3"
+                                    }
+                                />
 
-                                    <div className="flex flex-row gap-2 w-full justify-start items-center col-span-1">
+                                <div className="flex flex-row gap-2 w-full justify-start items-center col-span-1">
+                                    <div
+                                        className={`flex items-center justify-center`}
+                                    >
                                         <div
-                                            className={`flex items-center justify-center`}
-                                        >
-                                            <div
-                                                className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
-                                                    item.status
-                                                )}`}
-                                            ></div>
-                                        </div>
-                                        <p
-                                            className={`text-sm font-semibold ${statusMap1.get(
+                                            className={`w-[10px] h-[10px] rounded-full ${statusMap2.get(
                                                 item.status
                                             )}`}
-                                        >
-                                            {item.status}
-                                        </p>
+                                        ></div>
                                     </div>
-                                    <TextColumn
-                                        text={
-                                            GetTime(item.delivery_time || "") ||
-                                            ""
-                                        }
-                                        classNameValue={
-                                            "justify-center items-center col-span-2"
-                                        }
-                                    />
-                                    <TextColumn
-                                        text={FormatDay(item.create_at)}
-                                        classNameValue={
-                                            "justify-center items-center col-span-2"
-                                        }
-                                    />
-
-                                    <div className="flex justify-center items-center p-2 col-span-1">
-                                        {item.status === "Pending" && (
-                                            <div
-                                                onClick={(event) => {
-                                                    event.stopPropagation();
-                                                    setSelectedOrder(
-                                                        item.order_id
-                                                    );
-                                                    handleChangeStatus(
-                                                        item.status,
-                                                        item.order_id
-                                                    );
-                                                }}
-                                                className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
-                                            >
-                                                <Tooltip
-                                                    title="Confirm move to next stage"
-                                                    arrow
-                                                >
-                                                    <span>
-                                                        <LiaArrowRightSolid className="text-[30px] text-processing hover:text-orange-800" />
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
-                                        )}
-                                        {item.status === "Packed" && (
-                                            <div
-                                                onClick={(event) => {
-                                                    event.stopPropagation();
-                                                    setSelectedOrder(
-                                                        item.order_id
-                                                    );
-                                                    setIsOpenShowSelectDriver(
-                                                        true
-                                                    );
-                                                }}
-                                                className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
-                                            >
-                                                <Tooltip
-                                                    title="Confirm move to next stage"
-                                                    arrow
-                                                >
-                                                    <span>
-                                                        <MdOutlineDeliveryDining className="text-[30px] text-processing hover:text-orange-800 " />
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
-                                        )}
-                                        {item.status !== "Cancelled" &&
-                                            item.status !== "Delivered" &&
-                                            item.status !== "Successfully" && (
-                                                <div
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-
-                                                        handleCancelOrder(
-                                                            item.order_id
-                                                        );
-                                                    }}
-                                                    className="w-full h-full flex flex-row items-center justify-center gap-2    "
-                                                >
-                                                    <Tooltip
-                                                        title="Cancel order"
-                                                        arrow
-                                                    >
-                                                        <span>
-                                                            <LiaTimesCircle className="text-[30px] text-cancelled hover:text-red-300" />
-                                                        </span>
-                                                    </Tooltip>
-                                                </div>
-                                            )}
-                                    </div>
+                                    <p
+                                        className={`text-sm font-semibold ${statusMap1.get(
+                                            item.status
+                                        )}`}
+                                    >
+                                        {item.status}
+                                    </p>
                                 </div>
-                    
+
+                                <TextColumn
+                                    text={
+                                        item.delivery_time
+                                            ? (GetTime(
+                                                  item.delivery_time || ""
+                                              ) as string)
+                                            : `${FormatDay(item.create_at)}`
+                                    }
+                                    classNameValue={
+                                        "justify-center items-center col-span-2"
+                                    }
+                                />
+                                <TextColumn
+                                    text={FormatDay(item.create_at)}
+                                    classNameValue={
+                                        "justify-center items-center col-span-2"
+                                    }
+                                />
+
+                                <div className="flex justify-center items-center p-2 col-span-1">
+                                    {item.status === "Pending" && (
+                                        <div
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                setSelectedOrder(item.order_id);
+                                                handleChangeStatus(
+                                                    item.status,
+                                                    undefined,
+                                                    item.order_id
+                                                );
+                                            }}
+                                            className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
+                                        >
+                                            <Tooltip
+                                                title="Confirm move to next stage"
+                                                arrow
+                                            >
+                                                <span>
+                                                    <LiaArrowRightSolid className="text-[30px] text-processing hover:text-orange-800" />
+                                                </span>
+                                            </Tooltip>
+                                        </div>
+                                    )}
+                                    {item.status === "Packed" && (
+                                        <div
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                setSelectedOrder(item.order_id);
+                                                setIsOpenShowSelectDriver(true);
+                                            }}
+                                            className="w-full h-full flex flex-row items-center justify-center gap-2 animate-bounce-slow"
+                                        >
+                                            <Tooltip
+                                                title="Confirm move to next stage"
+                                                arrow
+                                            >
+                                                <span>
+                                                    <MdOutlineDeliveryDining className="text-[30px] text-processing hover:text-orange-800 " />
+                                                </span>
+                                            </Tooltip>
+                                        </div>
+                                    )}
+                                    {item.status !== "Cancelled" &&
+                                        item.status !== "Delivered" &&
+                                        item.status !== "Successfully" && (
+                                            <div
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+
+                                                    handleCancelOrder(
+                                                        item.order_id
+                                                    );
+                                                }}
+                                                className="w-full h-full flex flex-row items-center justify-center gap-2    "
+                                            >
+                                                <Tooltip
+                                                    title="Cancel order"
+                                                    arrow
+                                                >
+                                                    <span>
+                                                        <LiaTimesCircle className="text-[30px] text-cancelled hover:text-red-300" />
+                                                    </span>
+                                                </Tooltip>
+                                            </div>
+                                        )}
+                                </div>
+                            </div>
                         );
                     })}
                 </div>

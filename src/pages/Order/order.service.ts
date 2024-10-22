@@ -1,6 +1,5 @@
 import axios from "../../axios";
-import { getSumHistoryOrders } from '../../utils/Order/order.utils';
-
+import SocketSingleton from "../../socket";
 export const getOdersByParamsAPI = async (params: any) => {
     return await axios({
         method: "GET",
@@ -46,6 +45,16 @@ export const getOrderByIdAPI = async (id: number) => {
     })
 } 
 
+export const getOrdersByIdOrderAPI = async (id: number) => {
+    return await axios({
+        method: "GET",
+        url: `/order/id_order`,
+        params: {
+            order_id: id
+        }
+    })
+}
+
 export const getOrderItemsAPI = async (id: number) => {
     return await axios({
         method: "GET",
@@ -56,7 +65,10 @@ export const getOrderItemsAPI = async (id: number) => {
     })
 }
 
+
 export const changeStatusOrderAPI = async (params: any) => {
+    const socket = SocketSingleton.getInstance();
+    socket.emit("orderStatusChange", params);
     return await axios({
         method: "PUT",
         url: "/order/status",

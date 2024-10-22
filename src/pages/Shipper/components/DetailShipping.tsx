@@ -27,13 +27,11 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
     const [order, setOrder] = useState<any>(null);
     const [customer, setCustomer] = useState<any>(null);
     const [detailOrder, setDetailOrder] = useState<any>(null);
-  
 
     const [isStart, setIsStart] = useState(false);
 
-    const [start, setStart] = useState<[number,number]>([0,0]);
-    const [end, setEnd] = useState<[number,number]>([0,0]);
-
+    const [start, setStart] = useState<[number, number]>([0, 0]);
+    const [end, setEnd] = useState<[number, number]>([0, 0]);
 
     const handleDelivery = async () => {
         if (isStart) {
@@ -50,19 +48,21 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
     useEffect(() => {
         socket.on("Shipper-Position-Get", (data) => {
             if (data?.id === id) {
-                setStart([data?.shipperLocation?.lng, data?.shipperLocation?.lat]);
+                setStart([
+                    data?.shipperLocation?.lng,
+                    data?.shipperLocation?.lat,
+                ]);
             }
-        })
+        });
 
         return () => {
             socket.off("Shipper-Position-Get");
-        }
-
+        };
     }, [socket]);
 
     const fetchOrderData = async () => {
         const rs = await fetchOrder(order_id);
-        const data = await fetchCustomerById(rs.user_id);
+        const data = await fetchCustomerById(rs?.user_id);
         const detailOrder = await fetchOrderItems(order_id);
         setOrder(rs);
         setCustomer(data);
@@ -71,7 +71,7 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
     useEffect(() => {
         fetchOrderData();
     }, []);
-
+    console.log("order", order);
     return (
         <div
             onClick={() => setIsOpenDetail(false)}
@@ -94,11 +94,26 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
                 <div className="p-5"></div>
                 <h2 className="text-2xl font-bold mb-4">Order Details</h2>
 
-                <TextFieldComponent label="Order ID:" value={order_id.toString()} />
-                <TextFieldComponent label="Customer Name:" value={customer?.fullName} />
-                <TextFieldComponent label="Shipping Address:" value={order?.address} />
-                <TextFieldComponent label="Phone number:" value={customer?.phone} />
-                <TextFieldComponent label="Order time:" value={GetTime(order?.delivery_time)} />
+                <TextFieldComponent
+                    label="Order ID:"
+                    value={order_id.toString()}
+                />
+                <TextFieldComponent
+                    label="Customer Name:"
+                    value={customer?.fullName}
+                />
+                <TextFieldComponent
+                    label="Shipping Address:"
+                    value={order?.address}
+                />
+                <TextFieldComponent
+                    label="Phone number:"
+                    value={customer?.phone}
+                />
+                <TextFieldComponent
+                    label="Order time:"
+                    value={GetTime(order?.delivery_time)}
+                />
 
                 <table className="w-full border px-2 mt-3">
                     <thead>
@@ -129,7 +144,7 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
                 <div className="mt-4 gap-2 flex flex-col">
                     {isStart ? (
                         <>
-                            <Map start={start} end={[106.734675,10.806281]}/>
+                            <Map start={start} end={[order?.lng, order?.lat]} />
                             <button
                                 onClick={handleDelivery}
                                 className="px-4 py-2 w-full bg-green-500 text-white rounded hover:bg-green-700"

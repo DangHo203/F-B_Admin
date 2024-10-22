@@ -33,7 +33,7 @@ const ListNotification: React.FC<ListNotificationProps> = ({notifications}) => {
             }
         });
     };
-
+    
     useEffect(() => {
         dispatch(fetchNotifications());
     }, []);
