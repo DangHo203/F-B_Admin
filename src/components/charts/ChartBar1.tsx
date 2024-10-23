@@ -1,7 +1,12 @@
 import React from "react";
 import Chart from "react-apexcharts";
 
-const LineChart = () => {
+interface LineChartProps {
+    data: any;
+}
+const LineChart: React.FC<LineChartProps> = ({
+    data
+}) => {
     const options: ApexCharts.ApexOptions = {
         chart: {
             type: "line",
@@ -15,10 +20,6 @@ const LineChart = () => {
         colors: ["#1E3A8A", "#38BDF8"], // màu cho các đường line
         xaxis: {
             categories: [
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec",
                 "Jan",
                 "Feb",
                 "Mar",
@@ -27,6 +28,10 @@ const LineChart = () => {
                 "Jun",
                 "Jul",
                 "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"   
             ],
         },
         dataLabels: {
@@ -50,40 +55,38 @@ const LineChart = () => {
     };
 
     const series = [
-        {
-            name: "Total Revenue",
-            data: [30, 40, 35, 50, 49, 60, 70, 91, 125, 140, 160, 170],
-        },
+        // {
+        //     name: "Total Revenue",
+        //     data: [30, 40, 35, 50, 49, 60, 70, 91, 125, 140, 160, 170],
+        // },
         {
             name: "Total Sales",
-            data: [20, 30, 25, 40, 45, 55, 65, 85, 100, 120, 130, 145],
+            data: [20, 30, 25, 40, 45, 55, 65, 85, data?.last.total_profit, data?.current.total_profit,0,0],
         },
     ];
 
     return (
         <div className="bg-white p-6 shadow rounded-lg">
             <div className="flex justify-between">
-                <div>
+                {/* <div>
                     <h3 className="text-blue-800 font-bold">Total Revenue</h3>
                     <p className="text-sm text-gray-500">
                         12.04.2022 - 12.05.2022
                     </p>
-                </div>
+                </div> */}
                 <div>
                     <h3 className="text-blue-300 font-bold">Total Sales</h3>
-                    <p className="text-sm text-gray-500">
-                        12.04.2022 - 12.05.2022
-                    </p>
+                
                 </div>
             </div>
             <Chart options={options} series={series} type="line" height={320} />
             <div className="flex justify-end space-x-2 mt-2">
-                <button className="text-sm bg-gray-100 px-3 py-1 rounded">
+                {/* <button className="text-sm bg-gray-100 px-3 py-1 rounded">
                     Day
                 </button>
                 <button className="text-sm bg-gray-100 px-3 py-1 rounded">
                     Week
-                </button>
+                </button> */}
                 <button className="text-sm bg-gray-100 px-3 py-1 rounded">
                     Month
                 </button>

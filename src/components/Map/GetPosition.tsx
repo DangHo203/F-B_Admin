@@ -43,11 +43,11 @@ export const GetPosition: React.FC<{
             }
         );
 
-        // Cleanup function to stop watching location when the component unmounts
+      
         return () => {
             navigator.geolocation.clearWatch(watchId);
         };
     }, [onLocationFound]);
 
-    return null; // This component doesn't render anything
+    return null; 
 };

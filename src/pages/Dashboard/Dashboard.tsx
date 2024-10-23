@@ -33,8 +33,6 @@ export default function DashBoard() {
         sessionStorage.setItem("active", "1");
     }, []);
 
-    console.log(data);
-
     return (
         <div className="w-screen h-screen grid grid-cols-6 grid-rows-2 bg-main-bg">
             {/* sidebar */}
@@ -67,7 +65,7 @@ export default function DashBoard() {
                         }
                     />
                     <CardNumber
-                        title="Total Profit"
+                        title="Total Sales"
                         number={data?.current.total_profit}
                         change={
                             data?.last.total_profit
@@ -136,10 +134,12 @@ export default function DashBoard() {
                         }
                     />
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2  grid-rows-1 gap-4  w-full h-[70%]">
-                    <LineChart />
-                    <BarChart />
-                </div>
+                {data && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2  grid-rows-1 gap-4  w-full h-[70%]">
+                        <LineChart data={data} />
+                        <BarChart data={data} />
+                    </div>
+                )}
             </div>
         </div>
     );

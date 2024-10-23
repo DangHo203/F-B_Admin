@@ -9,6 +9,7 @@ interface MapboxComponentProps {
 mapboxgl.accessToken = "pk.eyJ1IjoiZHVvbmdsYXRvaSIsImEiOiJjbTI3c21qemMwb2JuMmpwdm9yOHh3YjhxIn0.RP4bO-ejWjEhO2JyPTsuZw";
 
 const MapboxComponent: React.FC<MapboxComponentProps> = ({ start, end }) => {
+    console.log(start, end);
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
     const mapRef = useRef<mapboxgl.Map | null>(null); 
@@ -61,6 +62,7 @@ const MapboxComponent: React.FC<MapboxComponentProps> = ({ start, end }) => {
                             `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
                             { method: "GET" }
                         );
+                        console.log(query);
                         const json = await query.json();
                         const data = json?.routes?.[0]?.geometry;
 
@@ -127,6 +129,7 @@ const MapboxComponent: React.FC<MapboxComponentProps> = ({ start, end }) => {
                         `https://api.mapbox.com/directions/v5/mapbox/cycling/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
                         { method: "GET" }
                     );
+                    console.log(query);
                     const json = await query.json();
                     const data = json?.routes?.[0]?.geometry;
 
