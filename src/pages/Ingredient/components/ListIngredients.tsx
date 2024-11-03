@@ -95,6 +95,7 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({ isRender }) => {
     }, [params, isRender, isEdit]);
 
     useEffect(() => {
+        socket.connect();
         if (list?.length === 0) {
             params.delete("page");
             params.append("page", "1");
@@ -111,6 +112,9 @@ const ListIngredients: React.FC<ListIngredientsProps> = ({ isRender }) => {
                 }
 
             });
+        }
+        return () => {
+            socket.disconnect();
         }
     }, [list]);
     return (

@@ -57,6 +57,7 @@ function App() {
     }, [isLogin, navigate]);
 
     useEffect(() => {
+        socket.connect();
         socket.on("orderCancelNotification", (orderId: string) => {
             console.log("orderCancelNotification", orderId);
 

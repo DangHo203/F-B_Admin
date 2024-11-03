@@ -5,12 +5,10 @@ import ListOrders from "./components/ListOrder";
 import Profile from "./components/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slice/user.slice";
-import { FaBell } from "react-icons/fa";
 
-//socket.io
-import { io, Socket } from "socket.io-client";
 import Swal from "sweetalert2";
 import { GetPosition } from "../../components/Map/GetPosition";
+import SocketSingleton from "../../socket";
 
 interface Location {
     lng: number;
@@ -20,7 +18,7 @@ interface ShipperProps {}
 const Shipper: React.FC<ShipperProps> = ({}) => {
     const [navChoose, setNavChoose] = useState<string>("Home");
     const { id, fullName } = useSelector((state: any) => state.userSlice);
-    const socket: Socket = io("http://localhost:5001");
+    const socket = SocketSingleton.getInstance();
     const [shipperLocation, setShipperLocation] = useState<Location | null>(
         null
     );
@@ -32,16 +30,11 @@ const Shipper: React.FC<ShipperProps> = ({}) => {
         socket.disconnect();
         dispatch(logout());
     };
-   
-    useEffect(() => {
-        socket.emit("Shipper-Position-Post", {shipperLocation, id});
-        return () => {
-            socket.off("Shipper-Position-Post");
-        }
-    }, [shipperLocation,socket]);
 
     useEffect(() => {
+        socket.connect(); 
         socket.emit("joinShipper", id);
+
         socket.on("orderOnArrive", (data) => {
             if (data === id) {
                 Swal.fire({
@@ -71,10 +64,25 @@ const Shipper: React.FC<ShipperProps> = ({}) => {
 
         return () => {
             socket.off("orderOnArrive");
+            socket.emit("disconnectCustom", id);
+            socket.disconnect();
+        };
+    }, [id]);
 
+    useEffect(() => {
+        if (shipperLocation) {
+            socket.emit("Shipper-Position-Post", { shipperLocation, id });
+            window.localStorage.setItem("shipperLocation", JSON.stringify(shipperLocation));
         }
-    }, []);
+    }, [shipperLocation, socket, id]);
 
+    useEffect(() => {
+        if (!shipperLocation) {
+            // Trigger re-render to get position from GetPosition component
+            setShipperLocation(null);
+        }
+    }, [shipperLocation]);
+    
     return (
         <>
             <GetPosition onLocationFound={setShipperLocation} />

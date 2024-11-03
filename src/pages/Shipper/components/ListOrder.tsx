@@ -15,18 +15,15 @@ const ListOrders: React.FC<ListOrdersProps> = ({
     const [list, setList] = useState([]);
 
     useEffect(() => {
-        const handleOrderOnArrive = () => {
-            console.log('orderOnArrive');
-        };
-
-        socket.emit("getListOrder");
+        socket.connect();
+        socket.emit("getListOrder", {});
 
         socket.on('orderOnArrive', (data) => {
             fetchOrders();
         });
 
         return () => {
-            socket.off('orderOnArrive', handleOrderOnArrive);
+            socket.off('orderOnArrive');
         };
     }, []);
     const fetchOrders = async () => {

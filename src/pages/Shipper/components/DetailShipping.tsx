@@ -11,6 +11,7 @@ import { io, Socket } from "socket.io-client";
 import Map from "../../../components/Map/Map";
 import { useSelector } from "react-redux";
 import TextFieldComponent from "../../../components/commons/TextField";
+import SocketSingleton from "../../../socket";
 
 interface DetailShippingProps {
     order_id: number;
@@ -23,11 +24,13 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
     handleComplete,
 }) => {
     const { id } = useSelector((state: any) => state.userSlice);
-    const socket: Socket = io("http://localhost:5001");
+    const socket = SocketSingleton.getInstance();
     const [order, setOrder] = useState<any>(null);
     const [customer, setCustomer] = useState<any>(null);
     const [detailOrder, setDetailOrder] = useState<any>(null);
-
+    const data = JSON.parse(
+        window.localStorage.getItem("shipperLocation") || "{}"
+    );
     const [isStart, setIsStart] = useState(false);
 
     const [start, setStart] = useState<[number, number]>([0, 0]);
@@ -144,7 +147,14 @@ const DetailShipping: React.FC<DetailShippingProps> = ({
                 <div className="mt-4 gap-2 flex flex-col">
                     {isStart ? (
                         <>
-                            <Map start={start} end={[order?.lng, order?.lat]} />
+                            <Map
+                                start={
+                                    start[0] === 0 || start[1] === 0
+                                        ? [data?.lng, data?.lat]
+                                        : start
+                                }
+                                end={[order?.lng, order?.lat]}
+                            />
                             <button
                                 onClick={handleDelivery}
                                 className="px-4 py-2 w-full bg-green-500 text-white rounded hover:bg-green-700"

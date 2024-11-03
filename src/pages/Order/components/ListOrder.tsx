@@ -27,7 +27,6 @@ import { cancelOrderAPI, changeStatusOrderAPI } from "../order.service";
 import { GetTime } from "../../../helper/GetTimeOnDate.helper";
 import Driver from "./ListDriver";
 import SocketSingleton from "../../../socket";
-import { now } from "moment";
 
 interface ListOrdersProps {
     isRender: boolean;
@@ -160,6 +159,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
     }, [list]);
 
     useEffect(() => {
+        socket.connect();
         socket.on("orderDelivered", () => {
             fetchData();
         });
@@ -169,6 +169,7 @@ const ListOrders: React.FC<ListOrdersProps> = ({ isRender, history }) => {
         });
         return () => {
             socket.off("orderDelivered");
+            socket.off("orderCommingNotification");
         };
     }, []);
     return (

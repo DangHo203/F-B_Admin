@@ -2,6 +2,7 @@ import axios from "axios";
 
 const instance = axios.create({
     baseURL: "http://localhost:5000/api",
+    // baseURL: "http://54.255.249.65:5000/api",
 });
 
 instance.interceptors.request.use(
@@ -27,7 +28,7 @@ instance.interceptors.response.use(
     function (error) {
         if (error?.response?.status === 403) {
             window.localStorage.removeItem("persist:user");
-            window.location.href = "/login";
+            window.location.href = "/#/login";
         }   
         return error?.response?.data;
     }

@@ -113,7 +113,7 @@ export default function Login() {
                 </div>
                 <span className="text-center">
                     Doesn't have an account,{" "}
-                    <a href={path.register} className="font-bold">
+                    <a onClick={()=>navigate(path.register)} className="font-bold">
                         Register
                     </a>{" "}
                 </span>

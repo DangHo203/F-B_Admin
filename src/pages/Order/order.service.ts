@@ -67,6 +67,7 @@ export const getOrderItemsAPI = async (id: number) => {
 
 
 export const changeStatusOrderAPI = async (params: any) => {
+    
     const socket = SocketSingleton.getInstance();
     socket.emit("orderStatusChange", params);
     return await axios({
@@ -75,6 +76,7 @@ export const changeStatusOrderAPI = async (params: any) => {
         params: params
     })
 }
+
 export const cancelOrderAPI = async (params: any) => {
     return await axios({
         method: "PUT",

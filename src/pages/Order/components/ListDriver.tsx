@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import SocketSingleton from "../../../socket";
 import { getShipper } from "../../../utils/Driver/Driver";
 import DriverCard from "./DriverCard";
+
 interface DriverProps {
     setIsOpenShowSelectDriver: (value: boolean) => void;
-    handleSelectDriver: (status: string, shipper_id?:number,order_id?:number) => void;
+    handleSelectDriver: (status: string, shipper_id?: number, order_id?: number) => void;
 }
 
 const Driver: React.FC<DriverProps> = ({
@@ -12,17 +13,26 @@ const Driver: React.FC<DriverProps> = ({
     handleSelectDriver,
 }) => {
     const socket = SocketSingleton.getInstance();
-    const [drivers, setDrivers] = useState([]);
+    const [drivers, setDrivers] = useState<number[]>([]);
     const [listDriverInfo, setListDriverInfo] = useState<any[]>([]);
 
     useEffect(() => {
+        socket.connect(); 
+        const handleListShipper = (data: any) => {
+            console.log(data);
+            setDrivers(data?.list || []);
+        };
+
         if (drivers.length === 0) {
-            socket.emit("getListShipper");
+            console.log("get list shipper");
+            socket.emit("getListShipper", {});
         }
-        socket.on("listShipper", (data) => {
-            setDrivers(data?.list);
-        });
-    }, []);
+
+        socket.on("listShipper", handleListShipper);
+        return () => {
+            socket.off("listShipper");
+        };
+    }, [drivers.length, socket]);
 
     const fetchDriver = async (id: number) => {
         const rs = await getShipper(id);
@@ -31,7 +41,7 @@ const Driver: React.FC<DriverProps> = ({
 
     useEffect(() => {
         const fetchAllDrivers = async () => {
-            if (drivers?.length >= 0) {
+            if (drivers.length > 0) {
                 const driverInfoArray = await Promise.all(
                     drivers.map(fetchDriver)
                 );
@@ -42,17 +52,14 @@ const Driver: React.FC<DriverProps> = ({
         fetchAllDrivers();
     }, [drivers]);
 
-
-
     return (
         <div className="fixed inset-0 z-40 bg-gray-600 bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg w-1/3">
                 <h2 className="text-xl font-bold mb-4">Select a Driver</h2>
                 <div className="flex flex-col gap-2">
-                    {listDriverInfo?.map((driver, index) => (
+                    {listDriverInfo.map((driver, index) => (
                         <div key={index}>
                             <DriverCard
-                                key={index}
                                 driver={driver}
                                 handleSelectDriver={handleSelectDriver}
                             />
@@ -69,4 +76,5 @@ const Driver: React.FC<DriverProps> = ({
         </div>
     );
 };
+
 export default Driver;
